@@ -17,7 +17,7 @@ export default function FoggyBackground() {
             speedX: number; speedY: number
             alpha: number
         }
-        let patches: FogPatch[] = []
+        const patches: FogPatch[] = []
 
         const resize = () => {
             const w = window.innerWidth, h = window.innerHeight

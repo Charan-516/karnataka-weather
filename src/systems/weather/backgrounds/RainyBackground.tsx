@@ -13,7 +13,7 @@ export default function RainyBackground() {
         let animId: number
         type Drop = { x: number; y: number; speed: number; length: number; alpha: number }
         type Ripple = { x: number; y: number; r: number; alpha: number; speed: number }
-        let drops: Drop[] = []
+        const drops: Drop[] = []
         let ripples: Ripple[] = []
 
         const DROP_COUNT = 200

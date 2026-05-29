@@ -11,8 +11,8 @@ export default function SunnyBackground() {
         if (!ctx) return
 
         let animId: number
-        let rays: { angle: number; speed: number; length: number; width: number }[] = []
-        let particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = []
+        const rays: { angle: number; speed: number; length: number; width: number }[] = []
+        const particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = []
 
         const resize = () => {
             canvas.width = window.innerWidth

@@ -12,7 +12,7 @@ export default function StormyBackground() {
 
         let animId: number
         type Vortex = { angle: number; radius: number; size: number; alpha: number; speed: number }
-        let particles: Vortex[] = []
+        const particles: Vortex[] = []
         let lightningAlpha = 0
         let lightningTimer = 0
 

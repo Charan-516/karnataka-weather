@@ -9,6 +9,9 @@ interface Props {
     color?: string
 }
 
+// eslint-disable-next-line react-hooks/purity
+const rand = (min: number, max: number) => Math.random() * (max - min) + min
+
 export default function ParticleField({
     count = 300,
     speedMultiplier = 1,
@@ -19,9 +22,9 @@ export default function ParticleField({
     const positions = useMemo(() => {
         const arr = new Float32Array(count * 3)
         for (let i = 0; i < count; i++) {
-            arr[i * 3] = (Math.random() - 0.5) * 40
-            arr[i * 3 + 1] = (Math.random() - 0.5) * 40
-            arr[i * 3 + 2] = -5 - Math.random() * 10
+            arr[i * 3] = rand(-20, 20)
+            arr[i * 3 + 1] = rand(-20, 20)
+            arr[i * 3 + 2] = rand(-15, -5)
         }
         return arr
     }, [count])

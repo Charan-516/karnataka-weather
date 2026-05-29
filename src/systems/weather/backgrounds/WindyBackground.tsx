@@ -12,7 +12,7 @@ export default function WindyBackground() {
 
         let animId: number
         type Streak = { x: number; y: number; speed: number; length: number; alpha: number; width: number }
-        let streaks: Streak[] = []
+        const streaks: Streak[] = []
 
         const resize = () => {
             canvas.width = window.innerWidth

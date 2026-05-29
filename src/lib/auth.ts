@@ -4,6 +4,7 @@ export interface User {
     email: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let supabaseClient: any = null
 async function getClient() {
     if (supabaseClient) return supabaseClient
