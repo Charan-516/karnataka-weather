@@ -1,0 +1,9 @@
+{
+    "python.defaultInterpreterPath": "C:\\Users\\chara\\Downloads\\latest karnataka-weather\\karnataka-weather\\backend\\venv\\Scripts\\python.exe",
+    "python.pythonPath": "C:\\Users\\chara\\Downloads\\latest karnataka-weather\\karnataka-weather\\backend\\venv\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "C:\\Users\\chara\\Downloads\\latest karnataka-weather\\karnataka-weather\\backend\\venv\\Lib\\site-packages"
+    ],
+    "python.venvPath": "C:\\Users\\chara\\Downloads\\latest karnataka-weather\\karnataka-weather\\backend",
+    "python.venvFolders": ["venv"]
+}
