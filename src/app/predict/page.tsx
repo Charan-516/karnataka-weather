@@ -181,7 +181,7 @@ function PredictContent() {
                         fontSize: '10px',
                         letterSpacing: '0.25em',
                         textTransform: 'uppercase',
-                        color: '#b87a52',
+                        color: '#5a3a1a',
                         marginBottom: '10px',
                     }}>
                         Atmospheric Conditions
@@ -279,10 +279,10 @@ function PredictContent() {
                         fontFamily: 'Space Mono, monospace',
                         fontSize: '10px',
                         letterSpacing: '0.15em',
-                        color: '#b87a52',
+                        color: '#5a3a1a',
                         cursor: 'pointer',
                         textTransform: 'uppercase',
-                        opacity: 0.7,
+                        opacity: 0.8,
                     }}
                 >
                     ← Change district
@@ -312,7 +312,7 @@ export default function PredictPage() {
                 fontFamily: 'Space Mono, monospace',
                 fontSize: '11px',
                 letterSpacing: '0.2em',
-                color: '#b87a52',
+                color: '#5a3a1a',
             }}>
                 Loading...
             </div>

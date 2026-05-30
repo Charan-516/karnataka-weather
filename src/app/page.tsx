@@ -103,7 +103,8 @@ export default function LoginPage() {
             fontSize: '8px',
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.35)',
+            color: '#fff',
+            textShadow: '0 1px 6px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.3)',
           }}>
             {cond}
           </div>

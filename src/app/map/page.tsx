@@ -96,7 +96,7 @@ export default function MapPage() {
                         fontSize: '10px',
                         letterSpacing: '0.12em',
                         textTransform: 'uppercase',
-                        color: '#b87a52',
+                        color: '#7a5530',
                         marginTop: '2px',
                     }}>
                         Click to select
@@ -135,16 +135,16 @@ export default function MapPage() {
                             fontSize: '10px',
                             letterSpacing: '0.25em',
                             textTransform: 'uppercase',
-                            color: '#b87a52',
-                        }}>
-                            Karnataka — Select District
-                        </div>
+                        color: '#5a3a1a',
+                    }}>
+                        Karnataka — Select District
                     </div>
-                    <div style={{
-                        fontFamily: 'Space Mono, monospace',
-                        fontSize: '10px',
-                        color: '#b87a52',
-                        opacity: 0.6,
+                </div>
+                <div style={{
+                    fontFamily: 'Space Mono, monospace',
+                    fontSize: '10px',
+                    color: '#5a3a1a',
+                    opacity: 0.65,
                     }}>
                         30 districts
                     </div>
@@ -229,7 +229,7 @@ export default function MapPage() {
                             fontSize: '10px',
                             letterSpacing: '0.12em',
                             textTransform: 'uppercase',
-                            color: '#b87a52',
+                            color: '#5a3a1a',
                             marginBottom: '4px',
                         }}>
                             Selected District
@@ -261,7 +261,7 @@ export default function MapPage() {
                                     {selected}
                                 </>
                             ) : (
-                                <span style={{ color: '#b87a52', fontSize: '16px' }}>
+                                <span style={{ color: '#5a3a1a', fontSize: '16px' }}>
                                     — hover and click a district
                                 </span>
                             )}

@@ -62,7 +62,7 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
             },
             {
                 destination: 'Mysore Palace',
-                image: 'https://images.unsplash.com/photo-1600100393203-5ba9541df13c?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.unsplash.com/photo-l2OdGlshGC0?fm=jpg&q=60&w=1200&auto=format&fit=crop',
                 description: 'The Indo-Saracenic architecture of Mysore Palace gleams under bright sunshine. The Sunday illumination at dusk is a must-see.',
                 bestTime: 'October to February',
                 tip: 'Visit on Sunday for the 7 PM palace illumination',
@@ -105,7 +105,7 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Hampi Ruins',
-                image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.unsplash.com/photo-Q0mSdYr7EFQ?fm=jpg&q=60&w=1200&auto=format&fit=crop',
                 description: 'Cloudy skies provide the perfect lighting for Hampi\'s ancient ruins — no harsh shadows, just the dramatic stones of Vijayanagara against a moody sky.',
                 bestTime: 'November to February',
                 tip: 'Cloudy days mean comfortable exploration — carry a light jacket',
