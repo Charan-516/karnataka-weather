@@ -148,6 +148,62 @@ body {
   transform: translateY(0);
 }
 
+/* ── Divider ─────────────────────────────────── */
+.login-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0 16px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(196, 154, 122, 0.3);
+}
+
+.login-divider span {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 0 14px;
+}
+
+/* ── Google Button ──────────────────────────── */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: rgba(255, 248, 235, 0.7);
+  border: 1px solid rgba(196, 154, 122, 0.35);
+  border-radius: var(--radius-btn);
+  padding: 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.google-btn:hover {
+  background: rgba(255, 248, 235, 0.95);
+  border-color: rgba(139, 69, 19, 0.4);
+}
+
+.google-btn:active {
+  transform: translateY(0);
+}
+
+.google-icon {
+  flex-shrink: 0;
+}
+
 .login-toggle {
   font-family: 'Space Mono', monospace;
   font-size: 11px;

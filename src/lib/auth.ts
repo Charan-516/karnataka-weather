@@ -39,6 +39,18 @@ export const AuthManager = {
         }
     },
 
+    async signInWithGoogle() {
+        const supabase = await getClient()
+        if (!supabase) return { success: false, error: 'Supabase not configured' }
+        const origin = typeof window !== 'undefined' ? window.location.origin : ''
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: `${origin}/auth/callback` },
+        })
+        if (error) return { success: false, error: error.message }
+        return { success: true }
+    },
+
     async login(email: string, password: string) {
         const supabase = await getClient()
         if (!supabase) return { success: false, error: 'Supabase not configured' }
