@@ -6,7 +6,6 @@ import { KARNATAKA_BORDER } from '@/lib/karnatakaBorder'
 
 export default function KarnatakaTerrain() {
     const meshRef = useRef<THREE.Mesh>(null)
-    const glowRef = useRef<THREE.Mesh>(null)
 
     const { extrudeGeo, shapeGeo } = useMemo(() => {
         const shape = new THREE.Shape()

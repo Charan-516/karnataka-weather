@@ -86,7 +86,7 @@ export default function LoginPage() {
         gap: '4px',
         padding: '0 4px',
       }}>
-        {CONDITION_BG.map((cond, i) => {
+        {CONDITION_BG.map((cond) => {
           const labelColor = {
             Sunny: '#3b2d8a',
             Cloudy: '#b8860b',

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { AuthManager } from '@/lib/auth'
+/* eslint-disable @next/next/no-img-element — external Unsplash/Pexels URLs, no optimization needed */
 
 import { WEATHER_CONTENT } from '@/lib/weatherContent'
 import { DISTRICT_CONTENT } from '@/lib/districtContent'

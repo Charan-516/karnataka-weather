@@ -9,7 +9,6 @@ interface Props {
     color?: string
 }
 
-// eslint-disable-next-line react-hooks/purity
 const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
 export default function ParticleField({
