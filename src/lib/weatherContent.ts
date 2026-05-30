@@ -48,21 +48,21 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Gokarna Beach',
-                image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/17352592/pexels-photo-17352592.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Sunny days are perfect for Gokarna\'s pristine beaches — Om Beach, Half Moon, and Paradise Beach offer crystal-clear waters and golden sands.',
                 bestTime: 'October to March',
                 tip: 'Visit early morning for the best light and empty shores',
             },
             {
                 destination: 'Nandi Hills Sunrise',
-                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/5922727/pexels-photo-5922727.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The most popular sunrise spot near Bangalore. Clear skies guarantee breathtaking views of the sun rising over the Deccan plateau.',
                 bestTime: '5:30 AM — year-round',
                 tip: 'Weekdays are far less crowded than weekends',
             },
             {
                 destination: 'Mysore Palace',
-                image: 'https://images.unsplash.com/photo-l2OdGlshGC0?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/33688561/pexels-photo-33688561.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The Indo-Saracenic architecture of Mysore Palace gleams under bright sunshine. The Sunday illumination at dusk is a must-see.',
                 bestTime: 'October to February',
                 tip: 'Visit on Sunday for the 7 PM palace illumination',
@@ -105,21 +105,21 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Hampi Ruins',
-                image: 'https://images.unsplash.com/photo-Q0mSdYr7EFQ?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/14514891/pexels-photo-14514891.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Cloudy skies provide the perfect lighting for Hampi\'s ancient ruins — no harsh shadows, just the dramatic stones of Vijayanagara against a moody sky.',
                 bestTime: 'November to February',
                 tip: 'Cloudy days mean comfortable exploration — carry a light jacket',
             },
             {
                 destination: 'Chikmagalur Coffee Trails',
-                image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/11758101/pexels-photo-11758101.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The coffee estates of Chikmagalur are at their most atmospheric under cloudy skies. Mist drifts between rows of coffee plants, creating a serene escape.',
                 bestTime: 'June to September',
                 tip: 'Take a plantation tour — the aroma of coffee in cool weather is unforgettable',
             },
             {
                 destination: 'Badami Caves',
-                image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/32236992/pexels-photo-32236992.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The 6th-century rock-cut cave temples of Badami are best explored in cloud cover — the soft light reveals intricate carvings without glare.',
                 bestTime: 'October to March',
                 tip: 'Combine with Aihole and Pattadakal for a full heritage day',
@@ -162,21 +162,21 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Jog Falls',
-                image: 'https://images.unsplash.com/photo-1600965962272-3b5e1a2e0a0a?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/25841472/pexels-photo-25841472.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'At 830 feet, Jog Falls is at its most spectacular during the monsoon. The roar of water can be heard from miles away as the Sharavathi River plunges into the gorge.',
                 bestTime: 'July to September',
                 tip: 'Visit during July-August for peak water volume — absolutely breathtaking',
             },
             {
                 destination: 'Agumbe Rainforest',
-                image: 'https://images.unsplash.com/photo-1511497584788-876760111969?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/7867865/pexels-photo-7867865.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Known as the "Cherrapunji of the South," Agumbe receives torrential rainfall that sustains dense rainforests, rare wildlife, and misty trails.',
                 bestTime: 'June to August',
                 tip: 'Carry leech socks and a good raincoat — trails get slippery',
             },
             {
                 destination: 'Sakleshpur',
-                image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/35659936/pexels-photo-35659936.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The greenest place in Karnataka during monsoon. Sakleshpur\'s rolling hills, spice plantations, and the Manjarabad Fort emerge from the mist.',
                 bestTime: 'July to September',
                 tip: 'Take the Sakleshpur-Mangalore railway route for stunning views',
@@ -219,21 +219,21 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Coorg (Kodagu)',
-                image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/1583207/pexels-photo-1583207.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Storm season brings a raw energy to Coorg\'s coffee plantations. The rolling hills become a front-row seat to nature\'s most dramatic displays.',
                 bestTime: 'June to August',
                 tip: 'Stay in a homestay with large windows for safe storm viewing',
             },
             {
                 destination: 'Karwar Coast',
-                image: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/34414701/pexels-photo-34414701.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The coastline near Karwar experiences some of the most dramatic storms. Massive waves crash against ancient rocks as thunder rolls across the sea.',
                 bestTime: 'June to August',
                 tip: 'Never go near the water during a storm — stay at a safe cliffside vantage',
             },
             {
                 destination: 'Kudremukh',
-                image: 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/33839644/pexels-photo-33839644.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The "Horse Face" peak of Kudremukh is surrounded by some of Karnataka\'s most intense storm activity, creating an unforgettable wilderness experience.',
                 bestTime: 'July to September',
                 tip: 'Only experienced trekkers should attempt trails during storm season',
@@ -276,21 +276,21 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Coorg Misty Mornings',
-                image: 'https://images.unsplash.com/photo-1499002238440-d264edd596ec?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/35688870/pexels-photo-35688870.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Coorg at dawn in foggy weather is a spiritual experience. Coffee estates disappear into mist, and the only sound is birdsong filtering through the fog.',
                 bestTime: 'December to February',
                 tip: 'Wake up at 5:30 AM for the most magical fog experience',
             },
             {
                 destination: 'Kemmangundi',
-                image: 'https://images.unsplash.com/photo-1762694731555-ccfb695a2330?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/13197241/pexels-photo-13197241.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'This hill station at 1,434 metres is frequently enveloped in fog, giving it an almost otherworldly atmosphere. The mist drifts through eucalyptus and silver oak plantations.',
                 bestTime: 'November to February',
                 tip: 'The Rose Garden is spectacular when viewed through morning mist',
             },
             {
                 destination: 'Agumbe Sunset Point',
-                image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/19583628/pexels-photo-19583628.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Agumbe\'s famous sunset is made even more magical when fog rolls in from the Arabian Sea, filtering the light into a soft, golden haze.',
                 bestTime: 'November to January',
                 tip: 'Arrive an hour before sunset — the light changes dramatically by the minute',
@@ -333,21 +333,21 @@ export const WEATHER_CONTENT: Record<string, WeatherContent> = {
         travel: [
             {
                 destination: 'Dandeli River Rafting',
-                image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/18759469/pexels-photo-18759469.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Windy conditions add an extra thrill to white-water rafting on the Kali River. The gusts create challenging rapids that experienced rafters love.',
                 bestTime: 'November to March',
                 tip: 'Check with operators — some cancel in extreme wind conditions',
             },
             {
                 destination: 'Nandi Hills Paragliding',
-                image: 'https://images.unsplash.com/photo-1766025552286-6d9425db9cab?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/5922727/pexels-photo-5922727.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'Nandi Hills\' consistent thermals make it a paragliding hotspot. Windy days provide the lift needed for extended flights over the Deccan plateau.',
                 bestTime: 'October to March',
                 tip: 'Go early — wind conditions are most stable in the morning',
             },
             {
                 destination: 'Mysore Dasara',
-                image: 'https://images.unsplash.com/photo-1774438533693-2c051b63d8cf?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+                image: 'https://images.pexels.com/photos/20064037/pexels-photo-20064037.jpeg?auto=compress&cs=tinysrgb&w=1200',
                 description: 'The festive season in Mysore coincides with windy weather. Colourful flags and bunting whip in the breeze, adding energy to the already vibrant celebrations.',
                 bestTime: 'September to October',
                 tip: 'Windy weather keeps the heat down — perfect for festival exploration',

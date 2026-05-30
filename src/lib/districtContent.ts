@@ -4,15 +4,19 @@ export interface DistrictContent {
     tips: string[]
 }
 
-const IMG = (id: string) => `https://images.unsplash.com/${id}?fm=jpg&q=60&w=1200&auto=format&fit=crop`
+const IMG = (id: string) => id.startsWith('http')
+    ? id
+    : `https://images.unsplash.com/${id}?fm=jpg&q=60&w=1200&auto=format&fit=crop`
+
+const PEX = (id: number) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`
 
 export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
 
     Bagalkote: {
         cards: [
             { image: IMG('photo-1599661046289-e31897846e41'), title: 'Badami Cave Temples', text: 'Carved into sandstone cliffs, the 6th-century cave temples of Badami showcase exquisite Chalukya artistry. Four caves dedicated to Hindu and Jain deities reveal intricate sculptures that have endured twelve centuries.', alt: 'Badami cave temple sandstone cliffs' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Pattadakal Heritage', text: 'A UNESCO World Heritage site, Pattadakal\'s nine Hindu temples blend northern and southern Indian architecture. The Virupaksha Temple\'s towering vimana dominates the skyline along the Malaprabha River.', alt: 'Pattadakal temple complex heritage' },
-            { image: IMG('photo-1771250851493-a156fb0a6b85'), title: 'Aihole\'s Experimental Ground', text: 'Known as the "Cradle of Indian Architecture," Aihole houses over 125 temples spanning centuries. The Durga Temple\'s apsidal plan and the Lad Khan Temple\'s unique design showcase bold architectural experimentation.', alt: 'Aihole ancient temple architecture' },
+            { image: PEX(29833608), title: 'Pattadakal Heritage', text: 'A UNESCO World Heritage site, Pattadakal\'s nine Hindu temples blend northern and southern Indian architecture. The Virupaksha Temple\'s towering vimana dominates the skyline along the Malaprabha River.', alt: 'Pattadakal temple complex heritage' },
+            { image: PEX(5497596), title: 'Aihole\'s Experimental Ground', text: 'Known as the "Cradle of Indian Architecture," Aihole houses over 125 temples spanning centuries. The Durga Temple\'s apsidal plan and the Lad Khan Temple\'s unique design showcase bold architectural experimentation.', alt: 'Aihole ancient temple architecture' },
         ],
         travel: [
             { destination: 'Badami Cave Complex', image: IMG('photo-1501785888041-af3ef285b470'), description: 'Explore four rock-cut caves dating to the Chalukya dynasty, each adorned with detailed carvings of Hindu deities, dancing figures, and Jain Tirthankaras.', bestTime: 'October to March', tip: 'Visit Cave 3 first — it has the largest and most intricate carvings' },
@@ -43,7 +47,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
             { image: IMG('photo-1511497584788-876760111969'), title: 'Jamboti Forests', text: 'The dense evergreen forests of Jamboti, part of the Western Ghats, are a biodiversity hotspot. Misty trails wind through groves of teak, bamboo, and sandalwood.', alt: 'Jamboti forest Western Ghats' },
         ],
         travel: [
-            { destination: 'Gokak Falls', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'A horseshoe-shaped waterfall plunging 52 metres, often called the "Niagara of Karnataka." The hanging bridge offers a thrilling view.', bestTime: 'July to September', tip: 'Visit after heavy rainfall for the most dramatic waterfall volume' },
+            { destination: 'Gokak Falls', image: PEX(18082819), description: 'A horseshoe-shaped waterfall plunging 52 metres, often called the "Niagara of Karnataka." The hanging bridge offers a thrilling view.', bestTime: 'July to September', tip: 'Visit after heavy rainfall for the most dramatic waterfall volume' },
             { destination: 'Kamal Basadi', image: IMG('photo-1504384308090-c894fdcc538d'), description: 'A beautifully carved Jain temple within Belagavi Fort, featuring polished black stone pillars and intricate ceiling carvings.', bestTime: 'October to February', tip: 'The sunlight streaming through the lattice work is photographer\'s delight' },
             { destination: 'Kittur', image: IMG('photo-1499002238440-d264edd596ec'), description: 'The historic town of Kittur is famous for Rani Chennamma\'s 1824 rebellion against the British. Her palace and fort are preserved as memorials.', bestTime: 'November to February', tip: 'Visit during the Kittur Utsava in February for cultural performances' },
         ],
@@ -54,7 +58,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         cards: [
             { image: IMG('photo-1506905925346-21bda4d32df4'), title: 'Nandi Hills Escapes', text: 'Just 60 km from Bengaluru, Nandi Hills rises 1,479 metres above sea level. The former summer retreat of Tipu Sultan offers sunrise views that draw crowds before dawn.', alt: 'Nandi Hills sunrise view' },
             { image: IMG('photo-1470071459604-3b5ec3a7fe05'), title: 'Devanahalli Fort', text: 'The birthplace of Tipu Sultan, this 15th-century fort features imposing granite walls and a temple dedicated to Lord Venugopala. The adjacent town retains old-world charm.', alt: 'Devanahalli fort Tipu Sultan' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Wine Country Pilgrimage', text: 'Kanavu and surrounding estates produce award-winning wines. The Nandi Valley\'s granite terrain and cool climate create ideal conditions for vineyards beside ancient hills.', alt: 'Nandi Valley vineyards wine' },
+            { image: PEX(35664855), title: 'Wine Country Pilgrimage', text: 'Kanavu and surrounding estates produce award-winning wines. The Nandi Valley\'s granite terrain and cool climate create ideal conditions for vineyards beside ancient hills.', alt: 'Nandi Valley vineyards wine' },
         ],
         travel: [
             { destination: 'Nandi Hills Sunrise Point', image: IMG('photo-1505144808419-1957a94ca61e'), description: 'The most popular sunrise destination near Bangalore. The view of the sun rising over the Deccan plateau from 1,479 metres is unforgettable.', bestTime: '5:30 AM year-round', tip: 'Weekdays are much less crowded than weekends for sunrise' },
@@ -82,7 +86,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         cards: [
             { image: IMG('photo-1775489876620-6611994afd43'), title: 'Bidar Fort\'s Majesty', text: 'One of India\'s largest forts, Bidar Fort sprawls over 10 square kilometres. Its unique Islamic architecture, intricate tile work, and the Rangin Mahal\'s Persian inscriptions showcase Bahmani grandeur.', alt: 'Bidar Fort Islamic architecture' },
             { image: IMG('photo-1504608524841-42fe6f032b4b'), title: 'Madrasa of Mahmud Gawan', text: 'A 15th-century Islamic college that was once a leading centre of learning in Asia. Its three-storey facade, minarets, and colourful tiles reflect Timurid influence in the Deccan.', alt: 'Madrasa Mahmud Gawan Bidar' },
-            { image: IMG('photo-1762694731555-ccfb695a2330'), title: 'Bidri Craft Heritage', text: 'Bidar is world-famous for Bidriware — a metalwork craft where silver inlay is set against blackened zinc alloy. This 600-year-old art form is a protected GI craft.', alt: 'Bidriware metal craft Bidar' },
+            { image: PEX(32089411), title: 'Bidri Craft Heritage', text: 'Bidar is world-famous for Bidriware — a metalwork craft where silver inlay is set against blackened zinc alloy. This 600-year-old art form is a protected GI craft.', alt: 'Bidriware metal craft Bidar' },
         ],
         travel: [
             { destination: 'Bidar Fort', image: IMG('photo-1505118380757-91f5f5632de0'), description: 'Explore the royal palaces, audience halls, and underground water systems of this sprawling Bahmani fort. The Solah Khamba Mosque is a masterpiece.', bestTime: 'October to March', tip: 'The fort\'s underground chambers maintain a cool temperature year-round' },
@@ -110,11 +114,11 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         cards: [
             { image: IMG('photo-1506905925346-21bda4d32df4'), title: 'Nandi Hills Majesty', text: 'The crown jewel of Chikkaballapura, Nandi Hills offers ancient hilltop temples, Tipu Sultan\'s summer palace, and sunrise views that reveal the entire Deccan plateau stretching endlessly.', alt: 'Nandi Hills sunrise panorama' },
             { image: IMG('photo-1748671631643-87e9ce7aa917'), title: 'Vidurashwatha Serenity', text: 'Known as the "Kashi of the South," this sacred site features a massive banyan tree covering several acres. The ancient temple and serene tank attract pilgrims seeking peace.', alt: 'Vidurashwatha banyan tree temple' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Avani\'s Mythological Legacy', text: 'The small village of Avani is believed to be where Lord Rama\'s consort Sita spent her exile. Seven temples dedicated to the Ramayana legend dot the scenic hillside.', alt: 'Avani temple hillside' },
+            { image: PEX(3509775), title: 'Avani\'s Mythological Legacy', text: 'The small village of Avani is believed to be where Lord Rama\'s consort Sita spent her exile. Seven temples dedicated to the Ramayana legend dot the scenic hillside.', alt: 'Avani temple hillside' },
         ],
         travel: [
             { destination: 'Nandi Hills', image: IMG('photo-1501785888041-af3ef285b470'), description: 'The historic hill fortress with temples, a palace, and stunning viewpoints. Yoga and meditation retreats are popular at the hilltop.', bestTime: 'October to March', tip: 'The Yoga centre on the hill offers classes with a view' },
-            { destination: 'Bhoga Nandeeshwara Temple', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'A magnificent 9th-century temple complex at the base of Nandi Hills, featuring three shrines and a large pushkarni (stepped tank).', bestTime: 'Year-round', tip: 'The temple tank reflects the gopuram beautifully at sunrise' },
+            { destination: 'Bhoga Nandeeshwara Temple', image: PEX(29833608), description: 'A magnificent 9th-century temple complex at the base of Nandi Hills, featuring three shrines and a large pushkarni (stepped tank).', bestTime: 'Year-round', tip: 'The temple tank reflects the gopuram beautifully at sunrise' },
             { destination: 'Gudibanda Fort', image: IMG('photo-1771250851493-a156fb0a6b85'), description: 'A lesser-known hill fort with panoramic views, ancient temples, and a unique rock-cut cave shrine dedicated to Lord Ganesha.', bestTime: 'October to February', tip: 'The trek up takes 30 minutes and offers great valley views' },
         ],
         tips: ['Book Nandi Hills tickets online for weekends', 'The drive from Bengaluru takes about 1.5 hours', 'Pack a picnic — there are few food options at the top', 'Early morning mist at Nandi Hills is magical in December', 'Combine with a visit to the Lepakshi temple across the border'],
@@ -124,7 +128,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         cards: [
             { image: IMG('photo-1559056199-641a0ac8b55e'), title: 'Coffee Country', text: 'Chikkamagaluru is the birthplace of Indian coffee. The misty slopes of the Mullayanagiri range host sprawling estates where arabica and robusta thrive under silver oak shade.', alt: 'Coffee plantation Chikkamagaluru' },
             { image: IMG('photo-1504384308090-c894fdcc538d'), title: 'Mullayanagiri Peak', text: 'At 1,930 metres, Mullayanagiri is Karnataka\'s highest peak. The trek to the summit passes through shola forests and grasslands, rewarding hikers with a breathtaking 360-degree panorama.', alt: 'Mullayanagiri peak trek view' },
-            { image: IMG('photo-1441974231531-c6227db76b6e'), title: 'Hebbe Falls Descent', text: 'A 168-metre two-tiered waterfall that cascades through coffee plantations. The trek to Hebbe Falls is as rewarding as the destination, with spice-scented air guiding the way.', alt: 'Hebbe falls waterfall coffee estate' },
+            { image: PEX(18082819), title: 'Hebbe Falls Descent', text: 'A 168-metre two-tiered waterfall that cascades through coffee plantations. The trek to Hebbe Falls is as rewarding as the destination, with spice-scented air guiding the way.', alt: 'Hebbe falls waterfall coffee estate' },
         ],
         travel: [
             { destination: 'Mullayanagiri Trek', image: IMG('photo-1464822759023-fed622ff2c3b'), description: 'Trek Karnataka\'s highest peak through misty shola forests. The summit offers views stretching to the Arabian Sea on clear days.', bestTime: 'October to February', tip: 'Start the trek by 6 AM to see sunrise from the summit' },
@@ -138,12 +142,12 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         cards: [
             { image: IMG('photo-1504608524841-42fe6f032b4b'), title: "Chitradurga Fort's Seven Walls", text: 'Built across 1,500 years, this massive fort features seven concentric walls, 19 gateways, and a sophisticated water harvesting system. The fort\'s Kannada name means "picturesque fort."', alt: 'Chitradurga fort walls' },
             { image: IMG('photo-1775489876620-6611994afd43'), title: 'The Hidden Garbha Gudi', text: 'Within the fort lies the Hidimbeshwara Temple, where a unique Shiva linga emerges naturally from the rock floor. The temple\'s architecture blends naturally with the boulders.', alt: 'Hidimbeshwara temple fort' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Rock Climbing Paradise', text: 'Chitradurga\'s giant granite boulders attract climbers from across India. Routes range from beginner-friendly slabs to daunting overhangs, all set against a historic backdrop.', alt: 'Rock climbing Chitradurga boulders' },
+            { image: PEX(15172763), title: 'Rock Climbing Paradise', text: 'Chitradurga\'s giant granite boulders attract climbers from across India. Routes range from beginner-friendly slabs to daunting overhangs, all set against a historic backdrop.', alt: 'Rock climbing Chitradurga boulders' },
         ],
         travel: [
             { destination: 'Chitradurga Fort', image: IMG('photo-1748671631643-87e9ce7aa917'), description: 'Explore one of India\'s most impressive hill forts. The seven-walled fortress contains temples, granaries, oil pits, and a sophisticated water system.', bestTime: 'October to March', tip: 'Hire a guide to navigate the fort\'s maze-like passages' },
             { destination: 'Chandravalli Caves', image: IMG('photo-1771518701790-9094cc6bd106'), description: 'Ancient natural caves with archaeological evidence of habitation from the 1st century BCE. The cave complex is set in a beautiful valley.', bestTime: 'November to February', tip: 'Combine with a visit to the nearby Ankali Mutt' },
-            { destination: 'Jogimatti State Forest', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'A lesser-known forest area with scenic viewpoints, a watchtower, and a small hill station feel. The sunset from Jogimatti is spectacular.', bestTime: 'October to March', tip: 'The forest department guesthouse offers basic but scenic accommodation' },
+            { destination: 'Jogimatti State Forest', image: PEX(939850), description: 'A lesser-known forest area with scenic viewpoints, a watchtower, and a small hill station feel. The sunset from Jogimatti is spectacular.', bestTime: 'October to March', tip: 'The forest department guesthouse offers basic but scenic accommodation' },
         ],
         tips: ['Wear comfortable walking shoes — the fort involves extensive climbing', 'Visit early morning to avoid the afternoon heat', 'The fort\'s audio guide is informative and worth the nominal fee', 'Carry water and snacks — there are limited options inside the fort', 'The nearby Vani Vilasa Dam is a peaceful evening spot'],
     },
@@ -155,7 +159,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
             { image: IMG('photo-1505144808419-1957a94ca61e'), title: 'Pilikula Nisargadhama', text: 'A 358-acre eco-tourism complex featuring a zoo, botanical garden, and lake. The Pilikula Heritage Village showcases the distinct culture of Tulu Nadu.', alt: 'Pilikula botanical garden lake' },
         ],
         travel: [
-            { destination: 'Panambur Beach', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'One of India\'s safest and cleanest beaches, Panambur offers water sports, dolphin sightings, and spectacular sunsets over the Arabian Sea.', bestTime: 'October to March', tip: 'Visit during the beach festival in December for cultural events' },
+            { destination: 'Panambur Beach', image: PEX(10412253), description: 'One of India\'s safest and cleanest beaches, Panambur offers water sports, dolphin sightings, and spectacular sunsets over the Arabian Sea.', bestTime: 'October to March', tip: 'Visit during the beach festival in December for cultural events' },
             { destination: 'Kudroli Gokarnanatha Temple', image: IMG('photo-1771250851493-a156fb0a6b85'), description: 'A magnificent temple built in the Kerala architectural style, dedicated to Lord Shiva. The intricate woodwork and towering gopuram are stunning.', bestTime: 'Year-round', tip: 'Visit during Maha Shivaratri for the grandest celebrations' },
             { destination: 'Kudremukh National Park', image: IMG('photo-1511497584788-876760111969'), description: 'A UNESCO World Heritage site within the Western Ghats, this national park protects vital elephant habitat and pristine shola-grassland ecosystems.', bestTime: 'October to February', tip: 'Trekking requires prior permission from the forest department' },
         ],
@@ -165,12 +169,12 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
     Davanagere: {
         cards: [
             { image: IMG('photo-1559056199-641a0ac8b55e'), title: 'Davanagere\'s Culinary Heart', text: 'Famous across Karnataka for its benne dosa (butter dosa), Davanagere\'s food culture is legendary. The city\'s eateries have perfected this crispy, buttery delicacy over generations.', alt: 'Davanagere benne dosa food' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Anjaneya Swamy Temple', text: 'The towering 72-foot Hanuman statue at Doddabathi is one of Karnataka\'s tallest. The temple complex offers panoramic views of the surrounding plains.', alt: 'Doddabathi Hanuman statue' },
-            { image: IMG('photo-1771250851493-a156fb0a6b85'), title: 'Bhadra River Backwaters', text: 'The Bhadra Reservoir creates serene backwaters that attract migratory birds and offer peaceful boating. The surrounding hills are covered in lush forests.', alt: 'Bhadra river backwaters' },
+            { image: PEX(5540015), title: 'Anjaneya Swamy Temple', text: 'The towering 72-foot Hanuman statue at Doddabathi is one of Karnataka\'s tallest. The temple complex offers panoramic views of the surrounding plains.', alt: 'Doddabathi Hanuman statue' },
+            { image: PEX(1522344), title: 'Bhadra River Backwaters', text: 'The Bhadra Reservoir creates serene backwaters that attract migratory birds and offer peaceful boating. The surrounding hills are covered in lush forests.', alt: 'Bhadra river backwaters' },
         ],
         travel: [
-            { destination: 'Davanagere Benne Dosa Trail', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'Embark on a culinary trail through Davanagere\'s iconic eateries, each claiming to serve the perfect butter dosa — crispy, golden, and generously buttered.', bestTime: 'Year-round', tip: 'Start with Sri Guru Kottureshwara for the original benne dosa' },
-            { destination: 'Kunduvada Kere', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'A serene lake surrounded by gardens, perfect for evening walks and bird watching. The park hosts a musical fountain show on weekends.', bestTime: 'October to February', tip: 'Visit during sunset for a beautiful golden-hour experience' },
+            { destination: 'Davanagere Benne Dosa Trail', image: PEX(3509775), description: 'Embark on a culinary trail through Davanagere\'s iconic eateries, each claiming to serve the perfect butter dosa — crispy, golden, and generously buttered.', bestTime: 'Year-round', tip: 'Start with Sri Guru Kottureshwara for the original benne dosa' },
+            { destination: 'Kunduvada Kere', image: PEX(35688869), description: 'A serene lake surrounded by gardens, perfect for evening walks and bird watching. The park hosts a musical fountain show on weekends.', bestTime: 'October to February', tip: 'Visit during sunset for a beautiful golden-hour experience' },
             { destination: 'Honnali', image: IMG('photo-1441974231531-c6227db76b6e'), description: 'A historic town on the banks of the Tungabhadra, known for its ancient temples and the scenic Honnali Falls on the river.', bestTime: 'November to February', tip: 'The temple\'s annual chariot festival in March is a vibrant affair' },
         ],
         tips: ['Don\'t leave Davanagere without trying the benne dosa', 'The city is a textile hub — check out the local cotton sarees', 'November to February is the best time to visit', 'The Davanagere coconut is known for its sweetness', 'Handloom shopping is excellent in the old market area'],
@@ -193,13 +197,13 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
     Gadag: {
         cards: [
             { image: IMG('photo-1599661046289-e31897846e41'), title: 'Veeranarayana Temple', text: 'Gadag\'s crowning glory, this 12th-century temple is a masterpiece of Kalyani Chalukya architecture. The temple\'s ornate pillars and intricate ceiling carvings are a testament to ancient craftsmanship.', alt: 'Veeranarayana temple Gadag' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Triple Temple Complex', text: 'The Trikuteshwara temple complex houses three shrines — to Shiva, Brahma, and Surya — under one roof. The Saraswati shrine within features a stunning ceiling of concentric circles.', alt: 'Trikuteshwara temple complex' },
-            { image: IMG('photo-1771250851493-a156fb0a6b85'), title: 'Kittur Rani Chennamma Memorial', text: 'Gadag district was the epicentre of Kittur\'s rebellion. The memorial at Kittur celebrates the first female ruler to lead an armed uprising against the British in 1824.', alt: 'Kittur Chennamma memorial' },
+            { image: PEX(5497596), title: 'Triple Temple Complex', text: 'The Trikuteshwara temple complex houses three shrines — to Shiva, Brahma, and Surya — under one roof. The Saraswati shrine within features a stunning ceiling of concentric circles.', alt: 'Trikuteshwara temple complex' },
+            { image: PEX(20405544), title: 'Kittur Rani Chennamma Memorial', text: 'Gadag district was the epicentre of Kittur\'s rebellion. The memorial at Kittur celebrates the first female ruler to lead an armed uprising against the British in 1824.', alt: 'Kittur Chennamma memorial' },
         ],
         travel: [
             { destination: 'Veeranarayana Temple', image: IMG('photo-1501785888041-af3ef285b470'), description: 'A marvel of Chalukya architecture with 96 carved pillars, each telling a story from the epics. The temple\'s sikharas dominate Gadag\'s skyline.', bestTime: 'October to February', tip: 'The evening aarti is a beautiful experience in the candle-lit shrine' },
             { destination: 'Tirumala Saavira Kambada Basadi', image: IMG('photo-1771518701790-9094cc6bd106'), description: 'A Jain temple with over 1,000 pillars, dating to the 8th century. The intricate carvings and serene atmosphere make it a hidden gem.', bestTime: 'November to February', tip: 'The pillar reflections in the polished floor create a stunning visual effect' },
-            { destination: 'Sunnal Lake', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'A serene artificial lake surrounded by green hills, popular for bird watching and peaceful picnics. The lake is an important stopover for migratory birds.', bestTime: 'October to March', tip: 'Bring binoculars for spotting flamingos and pelicans' },
+            { destination: 'Sunnal Lake', image: PEX(7075297), description: 'A serene artificial lake surrounded by green hills, popular for bird watching and peaceful picnics. The lake is an important stopover for migratory birds.', bestTime: 'October to March', tip: 'Bring binoculars for spotting flamingos and pelicans' },
         ],
         tips: ['Gadag\'s architecture enthusiasts will love the temple circuit', 'The town has excellent handloom cotton fabrics', 'Carry a guidebook on Chalukya architecture for deeper appreciation', 'Visit during winter for comfortable temple exploration', 'The local jolad rotti (jowar bread) is a must-try'],
     },
@@ -221,13 +225,13 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
     Haveri: {
         cards: [
             { image: IMG('photo-1566837945700-30057527ade0'), title: 'Siddheshwara Temple', text: 'Built in the 11th century by the Kalyani Chalukyas, this temple at Haveri features a unique blend of early Hoysala and Chalukya styles. The sculpted Nandi is exceptionally detailed.', alt: 'Siddheshwara temple Haveri' },
-            { image: IMG('photo-1504639725590-34d0984388bd'), title: 'Mukteshwara Temple', text: 'A gem of Chalukya architecture at Chaudayyadanapura. The temple\'s ornate doorframe and sculpted panels depict scenes from the Ramayana with remarkable detail.', alt: 'Mukteshwara temple carvings' },
-            { image: IMG('photo-1771250851493-a156fb0a6b85'), title: 'Utsav Rock Garden', text: 'A unique open-air museum featuring life-sized sculptures depicting rural Karnataka life. The garden showcases traditional occupations, festivals, and daily village scenes.', alt: 'Utsav Rock Garden sculptures' },
+            { image: PEX(32563599), title: 'Mukteshwara Temple', text: 'A gem of Chalukya architecture at Chaudayyadanapura. The temple\'s ornate doorframe and sculpted panels depict scenes from the Ramayana with remarkable detail.', alt: 'Mukteshwara temple carvings' },
+            { image: PEX(611269), title: 'Utsav Rock Garden', text: 'A unique open-air museum featuring life-sized sculptures depicting rural Karnataka life. The garden showcases traditional occupations, festivals, and daily village scenes.', alt: 'Utsav Rock Garden sculptures' },
         ],
         travel: [
             { destination: 'Siddheshwara Temple', image: IMG('photo-1501785888041-af3ef285b470'), description: 'An 11th-century architectural wonder with a beautifully carved Nandi mandapa and intricate ceiling panels depicting floral and geometric patterns.', bestTime: 'October to February', tip: 'The temple\'s polished black stone pillars are cool to touch even in summer' },
-            { destination: 'Bada And Shikaripura', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'Twin towns rich in history with ancient temples, a fort, and a beautiful lake. The area is known for its cotton and silk weaving traditions.', bestTime: 'November to February', tip: 'Watch traditional handloom weaving in the local weavers\' colony' },
-            { destination: 'Byadgi Chilli Market', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'Haveri is the heart of Karnataka\'s chilli cultivation. The Byadgi market, Asia\'s largest chilli market, explodes with colour during the harvest season.', bestTime: 'January to March', tip: 'The Byadgi chilli is known for its vibrant colour, not heat' },
+            { destination: 'Bada And Shikaripura', image: PEX(3509775), description: 'Twin towns rich in history with ancient temples, a fort, and a beautiful lake. The area is known for its cotton and silk weaving traditions.', bestTime: 'November to February', tip: 'Watch traditional handloom weaving in the local weavers\' colony' },
+            { destination: 'Byadgi Chilli Market', image: PEX(35688870), description: 'Haveri is the heart of Karnataka\'s chilli cultivation. The Byadgi market, Asia\'s largest chilli market, explodes with colour during the harvest season.', bestTime: 'January to March', tip: 'The Byadgi chilli is known for its vibrant colour, not heat' },
         ],
         tips: ['Haveri\'s temples are off the tourist trail — enjoy the solitude', 'The Utsav Rock Garden is great for families with children', 'Visit the Byadgi chilli market for a sensory overload', 'Temple timings vary — call ahead to confirm opening hours', 'The local cotton sarees make excellent souvenirs'],
     },
@@ -249,12 +253,12 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
     Kodagu: {
         cards: [
             { image: IMG('photo-1504384308090-c894fdcc538d'), title: 'Coffee Plantations of Coorg', text: 'Kodagu produces one-third of India\'s coffee. The misty hills are carpeted with emerald coffee plants interspersed with pepper vines, cardamom, and towering shade trees.', alt: 'Coorg coffee plantation mist' },
-            { image: IMG('photo-1441974231531-c6227db76b6e'), title: 'Abbey Falls\' Monsoon Roar', text: 'Plunging 70 metres through coffee plantations, Abbey Falls is at its most spectacular during the monsoon. The walkway through spice gardens adds to the experience.', alt: 'Abbey falls Coorg waterfall' },
+            { image: PEX(25841472), title: 'Abbey Falls\' Monsoon Roar', text: 'Plunging 70 metres through coffee plantations, Abbey Falls is at its most spectacular during the monsoon. The walkway through spice gardens adds to the experience.', alt: 'Abbey falls Coorg waterfall' },
             { image: IMG('photo-1511497584788-876760111969'), title: 'Nagarahole Tiger Reserve', text: 'Part of the Nilgiri Biosphere Reserve, Nagarahole shelters India\'s highest tiger density. Kabini\'s backwaters offer unmatched wildlife viewing from boat safaris.', alt: 'Nagarahole tiger reserve safari' },
         ],
         travel: [
             { destination: 'Raja\'s Seat', image: IMG('photo-1501785888041-af3ef285b470'), description: 'The "King\'s Seat" is a viewpoint commanding a panoramic sweep of the Western Ghats. Sunrise and sunset from this spot are legendary.', bestTime: 'October to March', tip: 'Arrive 30 minutes before sunrise for the best experience' },
-            { destination: 'Dubare Elephant Camp', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'Interact with elephants in a natural forest setting on the banks of the Kaveri. The camp offers bathing, feeding, and educational sessions.', bestTime: 'October to February', tip: 'Book the morning session when elephants are most active' },
+            { destination: 'Dubare Elephant Camp', image: PEX(14013575), description: 'Interact with elephants in a natural forest setting on the banks of the Kaveri. The camp offers bathing, feeding, and educational sessions.', bestTime: 'October to February', tip: 'Book the morning session when elephants are most active' },
             { destination: 'Talakaveri', image: IMG('photo-1505144808419-1957a94ca61e'), description: 'The birthplace of the sacred River Kaveri at 1,276 metres in the Brahmagiri range. The temple and tank mark the origin of this revered river.', bestTime: 'November to February', tip: 'Visit during Sankramana (October) for the special water-rising event' },
         ],
         tips: ['Coorg\'s Kodava culture is unique with distinct rituals and cuisine', 'Try Pandi curry (pork) with steamed rice — a local specialty', 'Homestays offer the most authentic Coorg experience', 'Carry warm clothes — evenings are cool year-round', 'Coffee plantation tours usually end with a complimentary tasting'],
@@ -264,7 +268,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         cards: [
             { image: IMG('photo-1506905925346-21bda4d32df4'), title: 'Kolar Gold Fields Legacy', text: 'Once Asia\'s largest gold mines, KGF operated for over a century before closing in 2001. The deep shafts and historic mining infrastructure narrate tales of colonial-era mining.', alt: 'Kolar gold fields mining' },
             { image: IMG('photo-1600100393203-5ba9541df13c'), title: 'Kolaramma Temple', text: 'A 9th-century Chola temple dedicated to the goddess Kolaramma. The temple\'s unique sculptural panels and the 1,000-pillar mantapa showcase Chola artistry far from Tamil Nadu.', alt: 'Kolaramma temple Chola architecture' },
-            { image: IMG('photo-1771250851493-a156fb0a6b85'), title: 'Avani\'s Ramayana Connection', text: 'The village of Avani in Kolar district is believed to be where Sita spent her exile. Eight ancient temples dot the hillside, each linked to episodes from the Ramayana.', alt: 'Avani temple Ramayana' },
+            { image: PEX(3509775), title: 'Avani\'s Ramayana Connection', text: 'The village of Avani in Kolar district is believed to be where Sita spent her exile. Eight ancient temples dot the hillside, each linked to episodes from the Ramayana.', alt: 'Avani temple Ramayana' },
         ],
         travel: [
             { destination: 'Kolar Gold Fields', image: IMG('photo-1748671631643-87e9ce7aa917'), description: 'Take a guided tour of the historic gold mining town. The British-era bungalows, mine shafts, and the KGF museum tell the story of gold mining.', bestTime: 'October to March', tip: 'The KGF museum has authentic mining equipment on display' },
@@ -283,7 +287,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         travel: [
             { destination: 'Anegundi', image: IMG('photo-1501785888041-af3ef285b470'), description: 'Older than Hampi, Anegundi is believed to be the monkey kingdom of Kishkindha. Explore the ancient fort, the Pampa Sarovar, and the Anjanadri Hill.', bestTime: 'October to March', tip: 'Anjanadri Hill is believed to be the birthplace of Hanuman' },
             { destination: 'Mahadeva Temple, Itagi', image: IMG('photo-1505144808419-1957a94ca61e'), description: 'A pinnacle of Western Chalukya architecture with exquisite sculptures. The temple\'s inscription describes it as "the emperor of temples."', bestTime: 'November to February', tip: 'The carving of the Nandi at the entrance is remarkably lifelike' },
-            { destination: 'Kinhal Village', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'Famous for Kinhal-style wooden toys and lacquerware, this village has preserved its craft tradition for over 200 years. Watch artisans at work.', bestTime: 'Year-round', tip: 'Buy directly from the artisans for the best prices and quality' },
+            { destination: 'Kinhal Village', image: PEX(5540015), description: 'Famous for Kinhal-style wooden toys and lacquerware, this village has preserved its craft tradition for over 200 years. Watch artisans at work.', bestTime: 'Year-round', tip: 'Buy directly from the artisans for the best prices and quality' },
         ],
         tips: ['Anegundi is less crowded than Hampi — enjoy the peace', 'Take the coracle ferry across the Tungabhadra to Anegundi', 'Kinhal toys make unique and sustainable souvenirs', 'The Mahadeva temple is a masterpiece — don\'t rush through it', 'Hire a local guide at Anegundi for the mythological connections'],
     },
@@ -311,7 +315,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         travel: [
             { destination: 'Mysore Palace', image: IMG('photo-1501785888041-af3ef285b470'), description: 'Visit the royal palace at night when it is illuminated with 97,000 lights. The Sunday illumination is particularly spectacular, especially during Dasara.', bestTime: 'Year-round, especially Sundays and Dasara season', tip: 'The palace\'s Durbar Hall with its stained-glass ceiling is breathtaking' },
             { destination: 'Brindavan Gardens', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'Terraced gardens with illuminated fountains, musical water shows, and manicured lawns overlooking the KRS Dam reservoir.', bestTime: 'October to May', tip: 'The night lighting and musical fountain show (7 PM) is a must-see' },
-            { destination: 'Mysore Zoo', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'One of India\'s oldest and best-maintained zoos, founded by the Maharaja in 1892. The walk-through aviary and reptile house are highlights.', bestTime: 'November to February', tip: 'Visit early morning when the animals are most active' },
+            { destination: 'Mysore Zoo', image: PEX(939850), description: 'One of India\'s oldest and best-maintained zoos, founded by the Maharaja in 1892. The walk-through aviary and reptile house are highlights.', bestTime: 'November to February', tip: 'Visit early morning when the animals are most active' },
         ],
         tips: ['Mysore pak is a must-buy sweet from its place of origin', 'October/November during Dasara is the best time to visit', 'The city\'s silk sarees are world-famous — visit the government silk factory', 'Mysore Palace\'s sound and light show is informative and entertaining', 'St. Philomena\'s Church is a stunning example of Gothic architecture'],
     },
@@ -351,7 +355,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
             { image: IMG('photo-1441974231531-c6227db76b6e'), title: 'Kavaledurga Fort Trek', text: 'A 14th-century fort atop a rocky hill surrounded by dense forest. The 4-km trek through the Western Ghats passes streams, spice gardens, and ancient gateways.', alt: 'Kavaledurga fort trek' },
         ],
         travel: [
-            { destination: 'Jog Falls', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'Witness one of India\'s most spectacular waterfalls. The view from the viewing platforms and the walk down to the base are unforgettable.', bestTime: 'July to October', tip: 'The walk down to the base is steep — allow 2 hours for the round trip' },
+            { destination: 'Jog Falls', image: PEX(25841472), description: 'Witness one of India\'s most spectacular waterfalls. The view from the viewing platforms and the walk down to the base are unforgettable.', bestTime: 'July to October', tip: 'The walk down to the base is steep — allow 2 hours for the round trip' },
             { destination: 'Tyarekol (Tiger) Falls', image: IMG('photo-1505144808419-1957a94ca61e'), description: 'A lesser-known waterfall near Jog, equally stunning but far less crowded. The pool at the base is perfect for a refreshing dip.', bestTime: 'August to November', tip: 'Ask locals for directions — the falls are not well signposted' },
             { destination: 'Kodachadri Peak', image: IMG('photo-1464822759023-fed622ff2c3b'), description: 'At 1,343 metres, Kodachadri offers breathtaking views of the Arabian Sea on clear days. The peak is surrounded by dense shola forests and grasslands.', bestTime: 'October to February', tip: 'The 14-km trek is challenging but the views are worth every step' },
         ],
@@ -395,7 +399,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         travel: [
             { destination: 'Gokarna Beaches', image: IMG('photo-1759220948579-aa4866af0f0d'), description: 'Explore a string of pristine beaches — Om, Half Moon, Paradise, and Nirvana. Each offers a different character, connected by scenic cliffside trails.', bestTime: 'October to March', tip: 'The cliff walk from Om Beach to Half Moon Beach is stunning at sunset' },
             { destination: 'Dandeli Wildlife Sanctuary', image: IMG('photo-1441974231531-c6227db76b6e'), description: 'Home to tigers, leopards, elephants, and over 300 bird species. The Kali River adds a unique dimension with rafting and coracle rides.', bestTime: 'November to May', tip: 'The white-water rafting season is November to March' },
-            { destination: 'Vibhooti Falls', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'A spectacular but less-touristed waterfall near Yellapur. The falls plunge into a deep pool perfect for swimming in a pristine forest setting.', bestTime: 'August to November', tip: 'The trail to the falls passes through areca nut plantations' },
+            { destination: 'Vibhooti Falls', image: PEX(18082819), description: 'A spectacular but less-touristed waterfall near Yellapur. The falls plunge into a deep pool perfect for swimming in a pristine forest setting.', bestTime: 'August to November', tip: 'The trail to the falls passes through areca nut plantations' },
         ],
         tips: ['Gokarna beaches are cleaner and quieter than Goa', 'Dandeli offers adventure for all levels — rafting, kayaking, and trekking', 'The Jog Falls-Sharavathi region is part of Uttara Kannada', 'Monsoon brings out the best in waterfalls and lush greenery', 'Try the local Gokarna seafood — especially the pomfret fry'],
     },
@@ -422,7 +426,7 @@ export const DISTRICT_CONTENT: Record<string, DistrictContent> = {
         ],
         travel: [
             { destination: 'Yadgir Fort', image: IMG('photo-1748671631643-87e9ce7aa917'), description: 'Explore the ruined fort atop a granite hill. The climb rewards with magnificent views of the Bhima River valley and the surrounding agricultural landscape.', bestTime: 'October to February', tip: 'The sunrise view from the top is spectacular and completely crowd-free' },
-            { destination: 'Sangameshwara Temple, Kembavi', image: IMG('photo-1762694731555-ccfb695a2330'), description: 'An 11th-century Chalukya temple with exquisite carvings and a large pushkarni (stepped tank). The temple is remarkably intact despite its age.', bestTime: 'November to February', tip: 'The temple tank\'s stepped architecture is beautifully photogenic' },
+            { destination: 'Sangameshwara Temple, Kembavi', image: PEX(32089411), description: 'An 11th-century Chalukya temple with exquisite carvings and a large pushkarni (stepped tank). The temple is remarkably intact despite its age.', bestTime: 'November to February', tip: 'The temple tank\'s stepped architecture is beautifully photogenic' },
             { destination: 'Chandrampalli Dam', image: IMG('photo-1441974231531-c6227db76b6e'), description: 'A scenic irrigation dam on the Bhima River, popular for picnics and bird watching. Migratory birds flock to the reservoir in winter.', bestTime: 'December to March', tip: 'Winter evenings offer the best bird sightings and a beautiful sunset' },
         ],
         tips: ['Yadgir is one of Karnataka\'s least explored districts', 'The local wooden toys make unique, sustainable souvenirs', 'Carry water — the fort trek can be dehydrating', 'The Bhima River valley is beautiful during the monsoon', 'Combine with a visit to nearby Gulbarga for a heritage tour'],
