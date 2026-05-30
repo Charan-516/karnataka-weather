@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
-import { AuthManager, type User } from '@/lib/auth'
+import { AuthManager } from '@/lib/auth'
 
 const CONDITION_BG = ['Sunny', 'Cloudy', 'Rainy', 'Stormy', 'Foggy', 'Windy']
 
@@ -20,17 +20,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isExiting, setIsExiting] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     AuthManager.current().then(u => {
       if (u) router.replace('/map')
     })
   }, [router])
-
-  useEffect(() => {
-    AuthManager.current().then(setUser)
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,12 +43,6 @@ export default function LoginPage() {
 
     setIsExiting(true)
     setTimeout(() => router.push('/map'), 900)
-  }
-
-  const handleLogout = async () => {
-    await AuthManager.logout()
-    setUser(null)
-    router.push('/')
   }
 
   return (
@@ -97,53 +86,32 @@ export default function LoginPage() {
         gap: '4px',
         padding: '0 4px',
       }}>
-        {CONDITION_BG.map((cond, i) => (
-          <div key={`label-${cond}`} style={{
-            flex: 1,
-            textAlign: 'center',
-            fontFamily: 'Space Mono, monospace',
-            fontSize: '9px',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: '#fff',
-            textShadow: '0 0 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.7)',
-            background: 'rgba(0,0,0,0.25)',
-            borderRadius: '4px',
-            padding: '3px 0',
-          }}>
-            {cond}
-          </div>
-        ))}
+        {CONDITION_BG.map((cond, i) => {
+          const labelColor = {
+            Sunny: '#3b2d8a',
+            Cloudy: '#b8860b',
+            Rainy: '#f5c8a0',
+            Stormy: '#b8d44a',
+            Foggy: '#8b5a3a',
+            Windy: '#9a5a7a',
+          }[cond] || '#fff'
+          return (
+            <div key={`label-${cond}`} style={{
+              flex: 1,
+              textAlign: 'center',
+              fontFamily: 'Space Mono, monospace',
+              fontSize: '9px',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: labelColor,
+              padding: '3px 0',
+            }}>
+              {cond}
+            </div>
+          )
+        })}
       </div>
-
-      {user && (
-        <button
-          onClick={handleLogout}
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            zIndex: 100,
-            background: 'rgba(255,255,255,0.12)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '8px',
-            padding: '10px 18px',
-            color: '#fff',
-            fontFamily: 'Space Mono, monospace',
-            fontSize: '10px',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-            transition: 'all 0.3s',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
-        >
-          Logout
-        </button>
-      )}
 
       <div
         style={{

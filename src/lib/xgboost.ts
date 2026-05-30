@@ -83,14 +83,27 @@ function applyRuleOverrides(
 ): [string, number] {
   const { humidity, windSpeed, minTemp, maxTemp } = input
 
-  if (humidity >= 88 && windSpeed >= 50) return ['Stormy', Math.max(mlConfidence, 0.85)]
-  if (humidity >= 85 && windSpeed >= 30) return ['Rainy', Math.max(mlConfidence, 0.82)]
-  if (humidity >= 92 && windSpeed >= 15) return ['Rainy', Math.max(mlConfidence, 0.80)]
-  if (humidity >= 70 && windSpeed >= 18 && windSpeed < 50) return ['Cloudy', Math.max(mlConfidence, 0.78)]
-  if (humidity >= 75 && windSpeed < 18) return ['Cloudy', Math.max(mlConfidence, 0.72)]
-  if (minTemp <= 16 && maxTemp <= 25 && humidity >= 35 && windSpeed <= 20) return ['Foggy', Math.max(mlConfidence, 0.75)]
-  if (maxTemp >= 33 && humidity <= 55) return ['Windy', Math.max(mlConfidence, 0.76)]
+  // Stormy: very high humidity + strong wind
+  if (humidity >= 88 && windSpeed >= 40) return ['Stormy', Math.max(mlConfidence, 0.88)]
 
+  // Rainy: very high humidity with any breeze, or high humidity with moderate wind
+  if (humidity >= 88 && windSpeed >= 5) return ['Rainy', Math.max(mlConfidence, 0.82)]
+  if (humidity >= 85 && windSpeed >= 15) return ['Rainy', Math.max(mlConfidence, 0.84)]
+  if (humidity >= 92 && windSpeed >= 3) return ['Rainy', Math.max(mlConfidence, 0.80)]
+
+  // Foggy: cool temps, moderate-high humidity, calm wind (checked before Cloudy)
+  if (humidity >= 40 && windSpeed <= 15 && minTemp <= 18 && maxTemp <= 26) return ['Foggy', Math.max(mlConfidence, 0.78)]
+
+  // Cloudy: moderate-high humidity any wind
+  if (humidity >= 70) return ['Cloudy', Math.max(mlConfidence, 0.80)]
+
+  // Windy: high wind speed (NOT already caught by Stormy/Rainy/Cloudy, so low-moderate humidity)
+  if (windSpeed >= 30) return ['Windy', Math.max(mlConfidence, 0.82)]
+
+  // Sunny: warm enough and dry-ish
+  if (maxTemp >= 26 && humidity <= 55) return ['Sunny', Math.max(mlConfidence, 0.85)]
+
+  // Fallback to ML model for edge cases
   return [mlLabel, mlConfidence]
 }
 

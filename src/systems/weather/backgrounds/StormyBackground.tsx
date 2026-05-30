@@ -64,6 +64,7 @@ export default function StormyBackground() {
                 lightningAlpha = 0.6 + Math.random() * 0.3
                 lightningTimer = 0
 
+                ctx.save()
                 const lx = Math.random() * canvas.width * 0.6 + canvas.width * 0.2
                 ctx.beginPath()
                 ctx.moveTo(lx, 0)
@@ -84,12 +85,15 @@ export default function StormyBackground() {
                 ctx.strokeStyle = `rgba(200, 180, 255, ${lightningAlpha * 0.5})`
                 ctx.lineWidth = 1
                 ctx.stroke()
+                ctx.restore()
             }
 
             if (lightningAlpha > 0) {
                 lightningAlpha -= 0.02
+                ctx.save()
                 ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, lightningAlpha * 0.15)})`
                 ctx.fillRect(0, 0, canvas.width, canvas.height)
+                ctx.restore()
             }
 
             animId = requestAnimationFrame(draw)
