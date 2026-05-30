@@ -159,8 +159,8 @@ function PredictContent() {
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                    background: 'rgba(255, 245, 238, 0.55)',
-                    backdropFilter: 'blur(32px)',
+                    background: 'rgba(250, 242, 232, 0.85)',
+                    backdropFilter: 'blur(40px)',
                     border: '1px solid rgba(232, 173, 140, 0.3)',
                     borderRadius: '28px',
                     padding: '48px 52px',
@@ -181,7 +181,7 @@ function PredictContent() {
                         fontSize: '10px',
                         letterSpacing: '0.25em',
                         textTransform: 'uppercase',
-                        color: '#5a3a1a',
+                        color: '#2a1a0a',
                         marginBottom: '10px',
                     }}>
                         Atmospheric Conditions
@@ -279,10 +279,10 @@ function PredictContent() {
                         fontFamily: 'Space Mono, monospace',
                         fontSize: '10px',
                         letterSpacing: '0.15em',
-                        color: '#5a3a1a',
+                        color: '#2a1a0a',
                         cursor: 'pointer',
                         textTransform: 'uppercase',
-                        opacity: 0.8,
+                        opacity: 0.9,
                     }}
                 >
                     ← Change district
@@ -312,7 +312,7 @@ export default function PredictPage() {
                 fontFamily: 'Space Mono, monospace',
                 fontSize: '11px',
                 letterSpacing: '0.2em',
-                color: '#5a3a1a',
+                color: '#2a1a0a',
             }}>
                 Loading...
             </div>

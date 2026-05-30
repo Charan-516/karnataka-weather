@@ -77,7 +77,7 @@ function ResultContent() {
     const confidence = parseFloat(params.get('confidence') || '0.75')
     const isDark = DARK_CONDITIONS.includes(condition)
     const textColor = isDark ? '#fff8f0' : '#3d1f0a'
-    const mutedColor = isDark ? 'rgba(255,248,240,0.7)' : '#6a4525'
+    const mutedColor = isDark ? 'rgba(255,248,240,0.75)' : '#3a2010'
     const weatherContent = WEATHER_CONTENT[condition] || WEATHER_CONTENT.Sunny
     const normalizedCity = city.replace(/\s+/g, '').replace(/[^a-zA-Z]/g, '')
     const districtKey = Object.keys(DISTRICT_CONTENT).find(
@@ -467,7 +467,7 @@ function ResultContent() {
                                             fontFamily: 'Space Mono, monospace',
                                             fontSize: '9px',
                                             letterSpacing: '0.1em',
-                                            color: isDark ? 'rgba(255,255,255,0.6)' : '#6a4525',
+                                            color: isDark ? 'rgba(255,255,255,0.65)' : '#3a2010',
                                             background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(232,173,140,0.2)',
                                             padding: '4px 10px',
                                             borderRadius: '99px',
@@ -630,7 +630,7 @@ export default function ResultPage() {
                 fontFamily: 'Space Mono, monospace',
                 fontSize: '10px',
                 letterSpacing: '0.2em',
-                color: '#6a4525',
+                color: '#2a1508',
             }}>
                 Loading...
             </div>

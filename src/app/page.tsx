@@ -88,23 +88,29 @@ export default function LoginPage() {
       {/* Season labels at bottom */}
       <div style={{
         position: 'fixed',
-        bottom: '12px',
+        bottom: '10px',
         left: 0,
         width: '100vw',
         display: 'flex',
         zIndex: 1,
         pointerEvents: 'none',
+        gap: '4px',
+        padding: '0 4px',
       }}>
         {CONDITION_BG.map((cond, i) => (
           <div key={`label-${cond}`} style={{
             flex: 1,
             textAlign: 'center',
             fontFamily: 'Space Mono, monospace',
-            fontSize: '8px',
-            letterSpacing: '0.15em',
+            fontSize: '9px',
+            fontWeight: 700,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
             color: '#fff',
-            textShadow: '0 1px 6px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.3)',
+            textShadow: '0 0 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.7)',
+            background: 'rgba(0,0,0,0.25)',
+            borderRadius: '4px',
+            padding: '3px 0',
           }}>
             {cond}
           </div>

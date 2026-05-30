@@ -96,7 +96,7 @@ export default function MapPage() {
                         fontSize: '10px',
                         letterSpacing: '0.12em',
                         textTransform: 'uppercase',
-                        color: '#7a5530',
+                        color: '#3a2010',
                         marginTop: '2px',
                     }}>
                         Click to select
@@ -110,8 +110,8 @@ export default function MapPage() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                    background: 'rgba(255, 245, 238, 0.55)',
-                    backdropFilter: 'blur(32px)',
+                    background: 'rgba(250, 242, 232, 0.85)',
+                    backdropFilter: 'blur(40px)',
                     border: '1px solid rgba(232, 173, 140, 0.3)',
                     borderRadius: '28px',
                     padding: '32px 36px 28px',
@@ -135,7 +135,7 @@ export default function MapPage() {
                             fontSize: '10px',
                             letterSpacing: '0.25em',
                             textTransform: 'uppercase',
-                        color: '#5a3a1a',
+                        color: '#2a1a0a',
                     }}>
                         Karnataka — Select District
                     </div>
@@ -143,8 +143,8 @@ export default function MapPage() {
                 <div style={{
                     fontFamily: 'Space Mono, monospace',
                     fontSize: '10px',
-                    color: '#5a3a1a',
-                    opacity: 0.65,
+                    color: '#2a1a0a',
+                    opacity: 0.7,
                     }}>
                         30 districts
                     </div>
@@ -229,7 +229,7 @@ export default function MapPage() {
                             fontSize: '10px',
                             letterSpacing: '0.12em',
                             textTransform: 'uppercase',
-                            color: '#5a3a1a',
+                            color: '#2a1a0a',
                             marginBottom: '4px',
                         }}>
                             Selected District
@@ -261,7 +261,7 @@ export default function MapPage() {
                                     {selected}
                                 </>
                             ) : (
-                                <span style={{ color: '#5a3a1a', fontSize: '16px' }}>
+                                <span style={{ color: '#2a1a0a', fontSize: '16px' }}>
                                     — hover and click a district
                                 </span>
                             )}
@@ -307,7 +307,7 @@ export default function MapPage() {
                     border: '1px solid rgba(232,173,140,0.4)',
                     borderRadius: '8px',
                     padding: '10px 18px',
-                    color: '#8b4513',
+                    color: '#3a1a08',
                     fontFamily: 'Space Mono, monospace',
                     fontSize: '10px',
                     letterSpacing: '0.15em',
