@@ -10,6 +10,7 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.metrics import classification_report
 from imblearn.over_sampling import SMOTE
 import uvicorn
+import threading
 
 model = None
 label_encoder = LabelEncoder()
@@ -17,7 +18,8 @@ label_encoder = LabelEncoder()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    train_model()
+    t = threading.Thread(target=train_model, daemon=True)
+    t.start()
     yield
 
 
@@ -219,6 +221,10 @@ class WeatherInput(BaseModel):
 
 @app.post("/predict")
 async def predict_weather(data: WeatherInput):
+    if model is None:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=503, content={"error": "Model still loading"})
+
     # Build raw input row
     raw = pd.DataFrame([[
         data.minTemp,
