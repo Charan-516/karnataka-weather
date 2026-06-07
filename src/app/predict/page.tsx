@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { AuthManager } from '@/lib/auth'
 import OrbitalPredict from '@/systems/sliders/OrbitalPredict'
 
-const API_URL = '/api'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 function PredictContent() {
     const router = useRouter()
@@ -180,7 +180,7 @@ function PredictContent() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    style={{ marginBottom: '24px' }}
+                    style={{ marginBottom: '16px' }}
                 >
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
@@ -240,15 +240,15 @@ function PredictContent() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.7, duration: 0.8 }}
-                    style={{ marginTop: '24px', textAlign: 'center' }}
+                    style={{ marginTop: '16px', textAlign: 'center' }}
                 >
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
-                        fontSize: '9px',
-                        letterSpacing: '0.2em',
+                        fontSize: '8px',
+                        letterSpacing: '0.15em',
                         textTransform: 'uppercase',
                         color: '#2a1a0a',
-                        marginBottom: '12px',
+                        marginBottom: '8px',
                         opacity: 0.5,
                     }}>
                         Quick Preview
@@ -284,9 +284,9 @@ function PredictContent() {
                                 }}
                                 style={{
                                     fontFamily: 'Space Mono, monospace',
-                                    fontSize: '10px',
-                                    letterSpacing: '0.1em',
-                                    padding: '6px 14px',
+                                    fontSize: '9px',
+                                    letterSpacing: '0.08em',
+                                    padding: '5px 12px',
                                     borderRadius: '20px',
                                     border: '1px solid rgba(139,69,19,0.2)',
                                     background: 'rgba(250,242,232,0.7)',
