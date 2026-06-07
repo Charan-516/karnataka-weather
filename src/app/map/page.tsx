@@ -104,223 +104,225 @@ export default function MapPage() {
                 </div>
             )}
 
+            {/* Scale wrapper for map card */}
+            <div style={{
+                transform: 'scale(0.67)',
+                transformOrigin: 'center center',
+            }}>
             {/* Main Glass Card */}
             <motion.div
-                initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                style={{
-                    background: 'rgba(250, 242, 232, 0.85)',
-                    backdropFilter: 'blur(40px)',
-                    border: '1px solid rgba(232, 173, 140, 0.3)',
-                    borderRadius: '28px',
-                    padding: '32px 36px 28px',
-                    width: 'min(860px, 94vw)',
-                    maxHeight: '94vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '16px',
-                    boxShadow: '0 24px 80px rgba(180,80,20,0.18)',
-                }}
-            >
-                {/* Header */}
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-end',
-                }}>
-                    <div>
-                        <div style={{
-                            fontFamily: 'Space Mono, monospace',
-                            fontSize: '10px',
-                            letterSpacing: '0.25em',
-                            textTransform: 'uppercase',
-                        color: '#2a1a0a',
+                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                    style={{
+                        background: 'rgba(250, 242, 232, 0.85)',
+                        backdropFilter: 'blur(40px)',
+                        border: '1px solid rgba(232, 173, 140, 0.3)',
+                        borderRadius: '28px',
+                        padding: '32px 36px 28px',
+                        width: '860px',
+                        boxShadow: '0 24px 80px rgba(180,80,20,0.18)',
+                    }}
+                >
+                    {/* Header */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-end',
                     }}>
-                        Karnataka — Select District
-                    </div>
-                </div>
-                <div style={{
-                    fontFamily: 'Space Mono, monospace',
-                    fontSize: '10px',
-                    color: '#2a1a0a',
-                    opacity: 0.7,
-                    }}>
-                        30 districts
-                    </div>
-                </div>
-
-                {/* SVG Map */}
-                <div style={{ flex: 1, minHeight: 0 }}>
-                    <svg
-                        viewBox="0 0 500 560"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            cursor: 'crosshair',
-                            display: 'block',
-                        }}
-                    >
-                        {GEO_DATA.map(({ district, polys }) => (
-                            <g
-                                key={district}
-                                onMouseMove={(e) => {
-                                    setTooltip({
-                                        visible: true,
-                                        name: district,
-                                        x: e.clientX,
-                                        y: e.clientY,
-                                    })
-                                    setHoveredDistrict(district)
-                                }}
-                                onMouseLeave={() => {
-                                    setTooltip(t => ({ ...t, visible: false }))
-                                    setHoveredDistrict(null)
-                                }}
-                                onClick={() => handleClick(district)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                {polys.map((poly, pi) =>
-                                    poly.map((ring, ri) => (
-                                        <path
-                                            key={`${pi}-${ri}`}
-                                            d={ringToPath(ring)}
-                                            fill={
-                                                selected === district
-                                                    ? 'rgba(212, 132, 90, 0.55)'
-                                                    : hoveredDistrict === district
-                                                        ? 'rgba(212, 132, 90, 0.35)'
-                                                        : 'rgba(232, 173, 140, 0.18)'
-                                            }
-                                            stroke={
-                                                selected === district || hoveredDistrict === district
-                                                    ? 'rgba(160, 70, 30, 0.75)'
-                                                    : 'rgba(180, 100, 60, 0.35)'
-                                            }
-                                            strokeWidth={
-                                                selected === district
-                                                    ? 1.2
-                                                    : hoveredDistrict === district
-                                                        ? 1.0
-                                                        : 0.6
-                                            }
-                                            strokeLinejoin="round"
-                                            style={{
-                                                transition: 'fill 0.18s ease, stroke 0.18s ease',
-                                            }}
-                                        />
-                                    ))
-                                )}
-                            </g>
-                        ))}
-                    </svg>
-                </div>
-
-                {/* Bottom Panel */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    height: '44px',
-                }}>
-                    <div>
-                        <div style={{
-                            fontFamily: 'Space Mono, monospace',
-                            fontSize: '10px',
-                            letterSpacing: '0.12em',
-                            textTransform: 'uppercase',
-                            color: '#2a1a0a',
-                            marginBottom: '4px',
-                        }}>
-                            Selected District
-                        </div>
-                        <motion.div
-                            key={selected || 'none'}
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            style={{
-                                fontFamily: 'Playfair Display, serif',
-                                fontSize: '22px',
-                                color: '#3d1f0a',
-                                letterSpacing: '-0.02em',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}
-                        >
-                            {selected ? (
-                                <>
-                                    <span style={{
-                                        width: '6px',
-                                        height: '6px',
-                                        borderRadius: '50%',
-                                        background: '#d4845a',
-                                        display: 'inline-block',
-                                        animation: 'pulse 2s ease-in-out infinite',
-                                    }} />
-                                    {selected}
-                                </>
-                            ) : (
-                                <span style={{ color: '#2a1a0a', fontSize: '16px' }}>
-                                    — hover and click a district
-                                </span>
-                            )}
-                        </motion.div>
-                    </div>
-
-                    {selected && (
-                        <motion.button
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            onClick={handleProceed}
-                            style={{
-                                background: '#d4845a',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '99px',
-                                padding: '10px 24px',
+                        <div>
+                            <div style={{
                                 fontFamily: 'Space Mono, monospace',
-                                fontSize: '11px',
-                                letterSpacing: '0.08em',
-                                cursor: 'pointer',
-                                boxShadow: '0 4px 16px rgba(212, 132, 90, 0.35)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
+                                fontSize: '10px',
+                                letterSpacing: '0.25em',
+                                textTransform: 'uppercase',
+                            color: '#2a1a0a',
+                        }}>
+                            Karnataka — Select District
+                        </div>
+                    </div>
+                    <div style={{
+                        fontFamily: 'Space Mono, monospace',
+                        fontSize: '10px',
+                        color: '#2a1a0a',
+                        opacity: 0.7,
+                        }}>
+                            30 districts
+                        </div>
+                    </div>
+
+                    {/* SVG Map */}
+                    <div style={{ width: '100%', aspectRatio: '500/560' }}>
+                        <svg
+                            viewBox="0 0 500 560"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                cursor: 'crosshair',
+                                display: 'block',
                             }}
                         >
-                            Continue →
-                        </motion.button>
-                    )}
-                </div>
-            </motion.div>
+                            {GEO_DATA.map(({ district, polys }) => (
+                                <g
+                                    key={district}
+                                    onMouseMove={(e) => {
+                                        setTooltip({
+                                            visible: true,
+                                            name: district,
+                                            x: e.clientX,
+                                            y: e.clientY,
+                                        })
+                                        setHoveredDistrict(district)
+                                    }}
+                                    onMouseLeave={() => {
+                                        setTooltip(t => ({ ...t, visible: false }))
+                                        setHoveredDistrict(null)
+                                    }}
+                                    onClick={() => handleClick(district)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {polys.map((poly, pi) =>
+                                        poly.map((ring, ri) => (
+                                            <path
+                                                key={`${pi}-${ri}`}
+                                                d={ringToPath(ring)}
+                                                fill={
+                                                    selected === district
+                                                        ? 'rgba(212, 132, 90, 0.55)'
+                                                        : hoveredDistrict === district
+                                                            ? 'rgba(212, 132, 90, 0.35)'
+                                                            : 'rgba(232, 173, 140, 0.18)'
+                                                }
+                                                stroke={
+                                                    selected === district || hoveredDistrict === district
+                                                        ? 'rgba(160, 70, 30, 0.75)'
+                                                        : 'rgba(180, 100, 60, 0.35)'
+                                                }
+                                                strokeWidth={
+                                                    selected === district
+                                                        ? 1.2
+                                                        : hoveredDistrict === district
+                                                            ? 1.0
+                                                            : 0.6
+                                                }
+                                                strokeLinejoin="round"
+                                                style={{
+                                                    transition: 'fill 0.18s ease, stroke 0.18s ease',
+                                                }}
+                                            />
+                                        ))
+                                    )}
+                                </g>
+                            ))}
+                        </svg>
+                    </div>
 
-            <button
-                onClick={async () => { await AuthManager.logout(); router.push('/') }}
-                style={{
-                    position: 'fixed',
-                    bottom: '24px',
-                    right: '24px',
-                    zIndex: 200,
-                    background: 'rgba(255,245,238,0.7)',
-                    backdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(232,173,140,0.4)',
-                    borderRadius: '8px',
-                    padding: '10px 18px',
-                    color: '#3a1a08',
-                    fontFamily: 'Space Mono, monospace',
-                    fontSize: '10px',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 20px rgba(180,80,20,0.12)',
-                    transition: 'all 0.3s',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,245,238,0.9)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,245,238,0.7)' }}
-            >
-                Logout
-            </button>
+                    {/* Bottom Panel */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        height: '44px',
+                    }}>
+                        <div>
+                            <div style={{
+                                fontFamily: 'Space Mono, monospace',
+                                fontSize: '10px',
+                                letterSpacing: '0.12em',
+                                textTransform: 'uppercase',
+                                color: '#2a1a0a',
+                                marginBottom: '4px',
+                            }}>
+                                Selected District
+                            </div>
+                            <motion.div
+                                key={selected || 'none'}
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                style={{
+                                    fontFamily: 'Playfair Display, serif',
+                                    fontSize: '22px',
+                                    color: '#3d1f0a',
+                                    letterSpacing: '-0.02em',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                }}
+                            >
+                                {selected ? (
+                                    <>
+                                        <span style={{
+                                            width: '6px',
+                                            height: '6px',
+                                            borderRadius: '50%',
+                                            background: '#d4845a',
+                                            display: 'inline-block',
+                                            animation: 'pulse 2s ease-in-out infinite',
+                                        }} />
+                                        {selected}
+                                    </>
+                                ) : (
+                                    <span style={{ color: '#2a1a0a', fontSize: '16px' }}>
+                                        — hover and click a district
+                                    </span>
+                                )}
+                            </motion.div>
+                        </div>
+
+                        {selected && (
+                            <motion.button
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                onClick={handleProceed}
+                                style={{
+                                    background: '#d4845a',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '99px',
+                                    padding: '10px 24px',
+                                    fontFamily: 'Space Mono, monospace',
+                                    fontSize: '11px',
+                                    letterSpacing: '0.08em',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 16px rgba(212, 132, 90, 0.35)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                }}
+                            >
+                                Continue →
+                            </motion.button>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+
+                <button
+                    onClick={async () => { await AuthManager.logout(); router.push('/') }}
+                    style={{
+                        position: 'fixed',
+                        bottom: '30px',
+                        right: '30px',
+                        zIndex: 200,
+                        background: 'rgba(255,245,238,0.7)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1px solid rgba(232,173,140,0.4)',
+                        borderRadius: '8px',
+                        padding: '10px 18px',
+                        color: '#3a1a08',
+                        fontFamily: 'Space Mono, monospace',
+                        fontSize: '10px',
+                        letterSpacing: '0.15em',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 20px rgba(180,80,20,0.12)',
+                        transition: 'all 0.3s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,245,238,0.9)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,245,238,0.7)' }}
+                >
+                    Logout
+                </button>
 
             <style>{`
         @keyframes pulse {

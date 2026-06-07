@@ -1,9 +1,10 @@
 'use client'
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { AuthManager } from '@/lib/auth'
 import OrbitalPredict from '@/systems/sliders/OrbitalPredict'
+import LoadingScreen from '@/components/ui/loading-screen'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -117,8 +118,6 @@ function PredictContent() {
                 maxTemp: maxTemp.toString(),
             })
             router.push(`/result?${params.toString()}`)
-        } finally {
-            setLoading(false)
         }
     }
 
@@ -317,6 +316,45 @@ function PredictContent() {
           to   { transform: translate(30px, 20px) scale(1.06); }
         }
       `}</style>
+
+        {/* Loading Overlay */}
+        <AnimatePresence>
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#f0ffff',
+              }}
+            >
+              <div style={{
+                position: 'fixed',
+                width: '600px', height: '600px', borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)',
+                top: '-200px', left: '-150px',
+                filter: 'blur(80px)',
+                pointerEvents: 'none',
+              }} />
+              <div style={{
+                position: 'fixed',
+                width: '500px', height: '500px', borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(96,165,250,0.1) 0%, transparent 70%)',
+                bottom: '-150px', right: '-120px',
+                filter: 'blur(80px)',
+                pointerEvents: 'none',
+              }} />
+              <LoadingScreen />
+            </motion.div>
+          )}
+        </AnimatePresence>
         </div>
     )
 }
