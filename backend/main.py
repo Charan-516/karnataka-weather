@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from contextlib import asynccontextmanager
 import pandas as pd
 import numpy as np
 import xgboost as xgb
@@ -10,7 +11,17 @@ from sklearn.metrics import classification_report
 from imblearn.over_sampling import SMOTE
 import uvicorn
 
-app = FastAPI()
+model = None
+label_encoder = LabelEncoder()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    train_model()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,9 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-model = None
-label_encoder = LabelEncoder()
 
 # Raw columns from CSV
 RAW_FEATURES = ["MinTemp", "MaxTemp", "Humidity", "Pressure", "WindSpeed"]
@@ -82,49 +90,45 @@ ENGINEERED_FEATURES = [
 
 def apply_rule_overrides(data, ml_label: str, ml_confidence: float) -> tuple:
     """
-    Meteorologically-calibrated rule overrides based on the actual
-    feature distributions per condition found in the dataset.
-    Only fires when the input values are strongly in a non-Sunny zone
-    and the ML model is uncertain or wrong.
+    Meteorologically-calibrated rule overrides.
+    Mirrors the frontend logic in src/lib/xgboost.ts exactly.
     """
     humidity = data.humidity
     wind = data.windSpeed
     min_temp = data.minTemp
     max_temp = data.maxTemp
 
-    # ----- STORMY: extreme wind + very high humidity -----
-    if humidity >= 88 and wind >= 50:
-        return "Stormy", max(ml_confidence, 0.85)
+    # Stormy: very high humidity + strong wind
+    if humidity >= 88 and wind >= 40:
+        return "Stormy", max(ml_confidence, 0.88)
 
-    # ----- RAINY: very high humidity + moderate-high wind -----
-    if humidity >= 85 and wind >= 30:
+    # Rainy: very high humidity with any breeze, or high humidity with moderate wind
+    if humidity >= 88 and wind >= 5:
         return "Rainy", max(ml_confidence, 0.82)
-
-    # ----- RAINY: extreme humidity alone -----
-    if humidity >= 92 and wind >= 15:
+    if humidity >= 85 and wind >= 15:
+        return "Rainy", max(ml_confidence, 0.84)
+    if humidity >= 92 and wind >= 3:
         return "Rainy", max(ml_confidence, 0.80)
 
-    # ----- CLOUDY: high humidity, moderate wind -----
-    if humidity >= 70 and wind >= 18 and wind < 50:
-        return "Cloudy", max(ml_confidence, 0.78)
+    # Foggy: cool temps, moderate-high humidity, calm wind (checked before Cloudy)
+    if humidity >= 40 and wind <= 15 and min_temp <= 18 and max_temp <= 26:
+        return "Foggy", max(ml_confidence, 0.78)
 
-    # ----- CLOUDY: moderately high humidity -----
-    if humidity >= 75 and wind < 18:
-        return "Cloudy", max(ml_confidence, 0.72)
+    # Cloudy: moderate-high humidity any wind
+    if humidity >= 70:
+        return "Cloudy", max(ml_confidence, 0.80)
 
-    # ----- FOGGY: cold + low wind -----
-    if min_temp <= 16 and max_temp <= 25 and humidity >= 35 and wind <= 20:
-        return "Foggy", max(ml_confidence, 0.75)
+    # Windy: high wind speed (not already caught by Stormy/Rainy/Cloudy)
+    if wind >= 30:
+        return "Windy", max(ml_confidence, 0.82)
 
-    # ----- WINDY: hot + dry -----
-    if max_temp >= 33 and humidity <= 55:
-        return "Windy", max(ml_confidence, 0.76)
+    # Sunny: warm enough and dry-ish
+    if max_temp >= 26 and humidity <= 55:
+        return "Sunny", max(ml_confidence, 0.85)
 
-    # If no rule fires, trust the ML model
     return ml_label, ml_confidence
 
 
-@app.on_event("startup")
 def train_model():
     global model, label_encoder
     print("=" * 60)
