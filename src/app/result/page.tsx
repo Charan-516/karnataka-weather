@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { AuthManager } from '@/lib/auth'
-/* eslint-disable @next/next/no-img-element — external Unsplash/Pexels URLs, no optimization needed */
+/* eslint-disable @next/next/no-img-element */
 
 import { WEATHER_CONTENT } from '@/lib/weatherContent'
 import { DISTRICT_CONTENT } from '@/lib/districtContent'
@@ -178,9 +178,30 @@ function ResultContent() {
     const textColor = accentColor
     const mutedColor = accentColor
     const weatherContent = WEATHER_CONTENT[condition] || WEATHER_CONTENT.Sunny
+    const CITY_ALIAS: Record<string, string> = {
+        Bengaluru: 'BengaluruUrban',
+        Bangalore: 'BengaluruUrban',
+        Mangaluru: 'DakshinaKannada',
+        Mangalore: 'DakshinaKannada',
+        Hubli: 'Dharwad',
+        Hubballi: 'Dharwad',
+        Tumkur: 'Tumakuru',
+        Mysore: 'Mysuru',
+        Bellary: 'Ballari',
+        Shimoga: 'Shivamogga',
+        Chikmagalur: 'Chikkamagaluru',
+        Gulbarga: 'Kalaburagi',
+        Bijapur: 'Vijayapura',
+        Coorg: 'Kodagu',
+        Hospet: 'Vijayanagara',
+        Hosapete: 'Vijayanagara',
+        Hampi: 'Vijayanagara',
+        Vijayanagara: 'Vijayanagara',
+    }
     const normalizedCity = city.replace(/\s+/g, '').replace(/[^a-zA-Z]/g, '')
+    const aliased = CITY_ALIAS[normalizedCity] || normalizedCity
     const districtKey = Object.keys(DISTRICT_CONTENT).find(
-        k => k.replace(/\s+/g, '').toLowerCase() === normalizedCity.toLowerCase()
+        k => k.replace(/\s+/g, '').toLowerCase() === aliased.toLowerCase()
     )
     const districtContent = districtKey ? DISTRICT_CONTENT[districtKey] : null
 
@@ -657,6 +678,7 @@ function ResultContent() {
                                         src={card.image}
                                         alt={card.alt}
                                         loading="lazy"
+                                        onError={(e) => { const fb = card.fallbackImage; if (fb && e.currentTarget.src !== fb) e.currentTarget.src = fb }}
                                         style={{
                                             width: '100%',
                                             height: '100%',
@@ -763,6 +785,7 @@ function ResultContent() {
                                         src={item.image}
                                         alt={item.destination}
                                         loading="lazy"
+                                        onError={(e) => { const fb = item.fallbackImage; if (fb && e.currentTarget.src !== fb) e.currentTarget.src = fb }}
                                         style={{
                                             width: '100%',
                                             height: '100%',
@@ -879,7 +902,8 @@ function ResultContent() {
                                 <div style={{
                                     fontFamily: 'Space Mono, monospace',
                                     fontSize: '24px',
-                                    color: isDark ? 'rgba(255,255,255,0.2)' : `${accentColor}30`,
+                                    color: textColor,
+                                    opacity: 0.45,
                                     marginBottom: '8px',
                                 }}>
                                     {String(i + 1).padStart(2, '0')}
