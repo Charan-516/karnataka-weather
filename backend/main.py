@@ -162,7 +162,7 @@ def train_model():
             print(f"  {label_encoder.classes_[cls_idx]}: {count}")
 
         # Train XGBoost with tuned hyperparameters
-        model = xgb.XGBClassifier(
+        clf = xgb.XGBClassifier(
             n_estimators=500,
             max_depth=8,
             learning_rate=0.05,
@@ -178,10 +178,11 @@ def train_model():
             random_state=42,
         )
 
-        model.fit(X_resampled, y_resampled)
+        clf.fit(X_resampled, y_resampled)
+        model = clf  # only set global model after training completes
 
         # Evaluate on ORIGINAL (non-resampled) data
-        preds = model.predict(X)
+        preds = clf.predict(X)
         print("\n" + "=" * 60)
         print("  MODEL PERFORMANCE (on original data)")
         print("=" * 60)
