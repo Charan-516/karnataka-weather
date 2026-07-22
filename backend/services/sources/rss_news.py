@@ -1,9 +1,15 @@
 import httpx
 import xml.etree.ElementTree as ET
 from typing import Optional
+from services.cache import news_cache
 
 
 async def fetch_news(district: str, place: Optional[str] = None) -> Optional[list]:
+    key = f"news_{district}_{place}"
+    cached = news_cache.get(key)
+    if cached is not None:
+        return cached
+
     try:
         if place:
             query = f"{place.replace(' ', '%20')}%20{district.replace(' ', '%20')}%20Karnataka"
@@ -28,7 +34,10 @@ async def fetch_news(district: str, place: Optional[str] = None) -> Optional[lis
                     "source": source,
                     "published": pub_date,
                 })
-            return items if items else None
+            final = items if items else None
+            if final:
+                news_cache.set(key, final)
+            return final
     except Exception as e:
         print(f"[RSS News] Error: {e}")
         return None

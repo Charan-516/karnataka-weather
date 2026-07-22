@@ -1,8 +1,14 @@
 import httpx
 from typing import Optional
+from services.cache import weather_cache
 
 
 async def fetch_weather(lat: float, lng: float) -> Optional[dict]:
+    key = f"{lat:.4f},{lng:.4f}"
+    cached = weather_cache.get(key)
+    if cached is not None:
+        return cached
+
     try:
         url = "https://api.open-meteo.com/v1/forecast"
         params = {
@@ -16,7 +22,9 @@ async def fetch_weather(lat: float, lng: float) -> Optional[dict]:
         async with httpx.AsyncClient(timeout=10) as client:
             resp = await client.get(url, params=params)
             resp.raise_for_status()
-            return resp.json()
+            data = resp.json()
+            weather_cache.set(key, data)
+            return data
     except Exception as e:
         print(f"[Open-Meteo] Error: {e}")
         return None

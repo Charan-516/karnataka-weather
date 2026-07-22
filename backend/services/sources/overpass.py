@@ -1,6 +1,7 @@
 import httpx
 from typing import Optional
 from services.static_places import PLACES_BY_DISTRICT
+from services.cache import places_cache
 
 _HEADERS = {
     "User-Agent": "KarnatakaWeather/1.0 (weather-app; contact@example.com) httpx",
@@ -54,6 +55,11 @@ def _static_fallback(district: str) -> Optional[list]:
 
 
 async def fetch_places(district: str) -> Optional[list]:
+    key = f"places_{district}"
+    cached = places_cache.get(key)
+    if cached is not None:
+        return cached
+
     query = f"""
     [out:json][timeout:15];
     area[name="Karnataka"]->.a;
@@ -66,15 +72,22 @@ async def fetch_places(district: str) -> Optional[list]:
     """
     places = await _try_overpass(query)
     if places:
+        places_cache.set(key, places)
         return places
     fallback = _static_fallback(district)
     if fallback:
         print(f"[Overpass] Fallback to static data for {district}")
+        places_cache.set(key, fallback)
         return fallback
     return None
 
 
 async def fetch_places_nearby(lat: float, lng: float, radius: int = 3000) -> Optional[list]:
+    key = f"nearby_{lat:.4f},{lng:.4f}_{radius}"
+    cached = places_cache.get(key)
+    if cached is not None:
+        return cached
+
     query = f"""
     [out:json][timeout:15];
     (
@@ -86,6 +99,7 @@ async def fetch_places_nearby(lat: float, lng: float, radius: int = 3000) -> Opt
     """
     places = await _try_overpass(query)
     if places:
+        places_cache.set(key, places)
         return places
     # Fallback: return nearest static places sorted by distance
     all_places = []

@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+from services.cache import llm_cache
 
 
 def _get_providers() -> list:
@@ -55,6 +56,11 @@ def _get_providers() -> list:
 
 
 async def generate_summary(district: str, context: dict) -> Optional[str]:
+    cache_key = f"llm_{district}"
+    cached = llm_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     providers = _get_providers()
     if not providers:
         return None
@@ -112,6 +118,7 @@ async def generate_summary(district: str, context: dict) -> Optional[str]:
                 resp.raise_for_status()
                 text = p["parse"](resp.json())
                 if text.strip():
+                    llm_cache.set(cache_key, text.strip())
                     return text.strip()
             except Exception as e:
                 print(f"[LLM] {p['name']} failed: {e}")

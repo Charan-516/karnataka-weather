@@ -1,6 +1,8 @@
+import asyncio
 from services.sources import open_meteo, overpass, wikipedia, wikimedia, rss_news
 from services.response_merger import merge_responses
 from services.llm_summarizer import generate_summary
+from services.cache import intelligence_cache, computing
 
 DISTRICT_COORDS: dict[str, tuple[float, float]] = {
     "BengaluruUrban": (12.9716, 77.5946),
@@ -44,12 +46,26 @@ async def get_intelligence(
     place_lng: float | None = None,
 ) -> dict:
     norm = district.replace(" ", "").replace("-", "")
+
+    if not place:
+        cached = intelligence_cache.get(norm)
+        if cached is not None:
+            print(f"[Intelligence] Cache hit for {district}")
+            return cached
+
+        if norm in computing:
+            print(f"[Intelligence] Waiting for pre-warm: {district}")
+            for _ in range(100):
+                cached = intelligence_cache.get(norm)
+                if cached is not None:
+                    print(f"[Intelligence] Pre-warm complete for {district}")
+                    return cached
+                await asyncio.sleep(0.1)
+
     coords = DISTRICT_COORDS.get(norm, DEFAULT_COORDS)
     lat, lng = coords
 
     query_name = district.replace(" ", "_")
-
-    import asyncio
 
     weather_task = open_meteo.fetch_weather(
         place_lat if place_lat else lat,
@@ -116,5 +132,9 @@ async def get_intelligence(
     summary = await generate_summary(place if place else district, merged)
     if summary:
         merged["summary"] = summary
+
+    if not place:
+        intelligence_cache.set(norm, merged)
+        print(f"[Intelligence] Cached result for {district}")
 
     return merged

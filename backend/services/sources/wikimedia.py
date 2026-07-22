@@ -1,5 +1,6 @@
 import httpx
 from typing import Optional
+from services.cache import wikimedia_cache
 
 _HEADERS = {
     "User-Agent": "KarnatakaWeather/1.0 (weather-app; contact@example.com) httpx"
@@ -7,6 +8,11 @@ _HEADERS = {
 
 
 async def fetch_images(query: str, limit: int = 6) -> Optional[list]:
+    key = f"img_{query}_{limit}"
+    cached = wikimedia_cache.get(key)
+    if cached is not None:
+        return cached
+
     try:
         async with httpx.AsyncClient(timeout=15, headers=_HEADERS) as client:
             resp = await client.get(
@@ -37,7 +43,10 @@ async def fetch_images(query: str, limit: int = 6) -> Optional[list]:
                         "title": title,
                         "url": info[0].get("url"),
                     })
-            return results if results else None
+            final = results if results else None
+            if final:
+                wikimedia_cache.set(key, final)
+            return final
     except Exception as e:
         print(f"[Wikimedia] Error: {e}")
         return None

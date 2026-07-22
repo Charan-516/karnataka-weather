@@ -7,9 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
-from services.weather_intelligence import get_intelligence
+from services.weather_intelligence import get_intelligence, DISTRICT_COORDS
 from services.prediction_utils import ENGINEERED_FEATURES, engineer_features, apply_rule_overrides
 from services.iot_gateway import router as iot_router, init as iot_init
+from services.cache import intelligence_cache, computing
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -22,6 +23,7 @@ from sklearn.metrics import classification_report
 from imblearn.over_sampling import SMOTE
 import uvicorn
 import threading
+import asyncio
 from pathlib import Path
 
 BACKEND_DIR = Path(__file__).parent
@@ -37,6 +39,10 @@ training_failed = False
 async def lifespan(app: FastAPI):
     t = threading.Thread(target=train_model, daemon=True)
     t.start()
+
+    cache_t = threading.Thread(target=prewarm_cache, daemon=True)
+    cache_t.start()
+
     yield
 
 
@@ -152,6 +158,32 @@ def train_model():
         print(f"Error during training: {e}")
         import traceback
         traceback.print_exc()
+
+
+def prewarm_cache():
+    print("[Pre-warm] Starting cache warm-up for all districts...")
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    for district in DISTRICT_COORDS:
+        if intelligence_cache.has(district) or district in computing:
+            continue
+        computing.add(district)
+        try:
+            result = loop.run_until_complete(
+                asyncio.wait_for(get_intelligence(district), timeout=30)
+            )
+            intelligence_cache.set(district, result)
+            print(f"[Pre-warm] Cached: {district}")
+        except asyncio.TimeoutError:
+            print(f"[Pre-warm] Timeout for {district}, skipping")
+        except Exception as e:
+            print(f"[Pre-warm] Error for {district}: {e}")
+        finally:
+            computing.discard(district)
+
+    loop.close()
+    print("[Pre-warm] Cache warm-up complete!")
 
 
 class WeatherInput(BaseModel):

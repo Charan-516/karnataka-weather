@@ -3,10 +3,12 @@
 import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import WeatherPortal from "@/components/portals/WeatherPortal";
+import dynamic from "next/dynamic";
 import { AuthManager } from "@/lib/auth";
 import { getPlacesForDistrict } from "@/lib/places";
 import { OutlineButton } from "@/components/ui/button";
+
+const WeatherPortal = dynamic(() => import("@/components/portals/WeatherPortal"), { ssr: false });
 
 function PortalContent() {
   const router = useRouter();

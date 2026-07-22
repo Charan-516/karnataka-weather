@@ -2,10 +2,17 @@
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 
+const SKIP_PATHS = ['/portal', '/intelligence/portal', '/intelligence/select', '/intelligence']
+
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
     const lenisRef = useRef<Lenis | null>(null)
 
     useEffect(() => {
+        const path = window.location.pathname
+        if (SKIP_PATHS.some(p => path === p || path.startsWith(p + '?'))) {
+            return
+        }
+
         const lenis = new Lenis({
             duration: 1.4,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import LenisProvider from '@/components/layout/LenisProvider'
+import AuthPreloader from '@/components/layout/AuthPreloader'
 
 export const metadata: Metadata = {
   title: 'Karnataka Weather',
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <AuthPreloader />
         <LenisProvider>
           {children}
         </LenisProvider>
