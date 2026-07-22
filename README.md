@@ -36,7 +36,7 @@ Frontend (Next.js 15, port 3000)           Backend (FastAPI, port 8000)
 
 - **Manual** — Users adjust 5 atmospheric variables (humidity, pressure, wind speed, min/max temperature) via orbital sliders. XGBoost inference runs on the Python backend; an inline fallback handles server failures.
 - **IoT** — Live sensor data from Wokwi ESP32 simulator (DHT22 + BMP180 + potentiometer) or physical hardware. The backend returns ±3°C temperature bounds from the estimate. Controls allow pause/resume/reset/stop. API key authentication required.
-- **Intelligence** — AI-powered analysis that queries Open-Meteo forecast APIs, OpenStreetMap (Overpass) for local infrastructure, Wikimedia Commons for landmarks, and an LLM (Gemini or Groq) for natural language summaries. Returns 7-day forecast, landmarks, places, and a narrative summary.
+- **Intelligence** — AI-powered analysis that queries Open-Meteo forecast APIs, OpenStreetMap (Overpass) for local infrastructure, Wikimedia Commons for landmarks, and an LLM (Gemini or Groq) for natural language summaries. Returns 7-day forecast, landmarks, places, and a narrative summary. Responses are cached per-district with a 2-minute TTL (60x speedup for cached requests).
 
 ## Techniques
 
@@ -50,11 +50,17 @@ Frontend (Next.js 15, port 3000)           Backend (FastAPI, port 8000)
 - **Auto-disconnecting IntersectionObserver** — Sequential reveal of content cards via `useScrollReveal` hook that calls `obs.unobserve(el)` after firing once.
 - **IoT API key authentication** — [`backend/services/iot_gateway.py`](backend/services/iot_gateway.py) verifies `X-Api-Key` header against `IOT_API_KEY` env var for all IoT endpoints.
 - **Wokwi ESP32 integration** — [`backend/wokwi/sketch.ino`](backend/wokwi/sketch.ino) sends DHT22 + BMP180 + potentiometer data to the backend every 10 seconds via HTTP POST.
+- **TTL caching layer** — [`backend/services/cache.py`](backend/services/cache.py) provides per-source caching (weather 2min, places 6hr, wiki 24hr, wikimedia 6hr, news 30min, LLM 2min) and district-level intelligence caching (2min TTL) with 60x speedup on cache hits.
+- **Priority cache pre-warming** — Background thread pre-caches all 31 districts on server start with 30s timeout per district. If user requests a district being pre-warmed, the system waits for it.
+- **Conditional Lenis** — [`LenisProvider.tsx`](src/components/layout/LenisProvider.tsx) skips smooth scroll rAF loop on non-scrollable pages (/portal, /intelligence/portal) to reduce jank.
+- **Dynamic import** — WeatherPortal loaded via `next/dynamic` so portal cards render as HTML first, animations load after.
+- **Auth preloading** — [`AuthPreloader.tsx`](src/components/layout/AuthPreloader.tsx) preloads Supabase client in background on app mount to prevent layout shift.
+- **Static place fallback** — [`backend/services/static_places.py`](backend/services/static_places.py) provides 10-20 hardcoded popular places per district when Overpass API times out.
 
 ## Libraries & Fonts
 
 - **[Framer Motion](https://motion.dev)** — Spring-based entry animations: fade-up with blur, scale-in, and staggered delays.
-- **[Lenis](https://github.com/studio-freight/lenis)** — Smooth scrolling with custom cubic easing (configured in [`LenisProvider.tsx`](src/components/layout/LenisProvider.tsx)).
+- **[Lenis](https://github.com/studio-freight/lenis)** — Smooth scrolling with custom cubic easing, conditionally disabled on portal pages to reduce jank (configured in [`LenisProvider.tsx`](src/components/layout/LenisProvider.tsx)).
 - **[Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs)** — Authentication via `@supabase/ssr`. Email/password signup and Google OAuth.
 - **[Lucide React](https://lucide.dev)** — Icons for orbital variable nodes.
 - **[Playfair Display](https://fonts.google.com/specimen/Playfair+Display)** — Serif headings and district names.
@@ -80,12 +86,13 @@ karnataka-weather/
 │   │   ├── sketch.ino              # ESP32 Wokwi simulator sketch
 │   │   └── wokwi.toml              # Wokwi project config
 │   └── services/
+│       ├── cache.py                # TTLCache: per-source + district-level cache
 │       ├── prediction_utils.py     # Feature engineering + model constants
 │       ├── iot_gateway.py          # IoT endpoints (API key auth)
 │       ├── iot_manager.py          # IoT session state management
 │       ├── weather_intelligence.py # Open-Meteo + Overpass + Wikimedia + LLM
 │       ├── llm_summarizer.py       # Gemini / Groq provider integration
-│       ├── static_places.py        # 30-district place data
+│       ├── static_places.py        # 30-district place data (Overpass fallback)
 │       ├── response_merger.py      # Response merging utility
 │       └── sources/
 │           ├── overpass.py         # OpenStreetMap Overpass API
@@ -110,7 +117,9 @@ karnataka-weather/
 │   │   ├── history/page.tsx        # Prediction history
 │   │   └── auth/callback/route.ts  # Supabase OAuth exchange endpoint
 │   ├── components/
-│   │   ├── layout/LenisProvider.tsx
+│   │   ├── layout/
+│   │   │   ├── LenisProvider.tsx     # Conditional smooth scroll (skips on portal pages)
+│   │   │   └── AuthPreloader.tsx     # Background Supabase client preload
 │   │   ├── portals/
 │   │   │   ├── WeatherPortal.tsx   # CometCard with 3D tilt + PortalGlow
 │   │   │   └── PortalGlow.tsx      # Cursor-following color glow
@@ -201,6 +210,22 @@ npm run build        # Production build
 npm run start        # Start production server
 npm run lint         # ESLint
 ```
+
+## Bugs Fixed
+
+| Bug | Solution |
+|-----|----------|
+| AI Portal card click caused full page animation replay, blank screen, and scroll jump | Wrapped `WeatherPortal` in `useRef` + `AnimatePresence` so it mounts once and toggles visibility; changed `selectedTool` from index-based to string-based; applied `overflow-hidden` on body when modal is open |
+| Intelligence page combobox component caused Vercel build failure | Changed `components/ui/combobox.tsx` from `React.FC` pattern to plain function export to fix TypeScript build errors |
+| Frontend `.env.local` was in `.gitignore`, causing blank pages on Vercel | Created `.env.local` with `NEXT_PUBLIC_API_URL` pointing to Render backend |
+| Backend CORS blocked Vercel frontend | Added Vercel origin to `CORS_ORIGINS` env var on Render dashboard |
+| Weather data not loading on portal | Frontend needed `NEXT_PUBLIC_API_URL` env var pointing to backend API |
+| Backend build failed on Render | Added `requirements.txt` with `slowapi==0.1.9` and all dependencies |
+| `/intelligence` endpoint too slow for 100 concurrent users | Added TTL caching layer: per-source caches + district-level 2-min cache, giving 60x speedup (2.39s → 0.04s) |
+| Overpass API flaky on shared IPs (Render VPS) | Added `static_places.py` fallback with 10-20 hardcoded popular places per district |
+| Portal pages laggy due to smooth scroll on non-scrollable pages | Conditional `LenisProvider`: skips rAF loop on /portal, /intelligence/portal, /intelligence/select, /intelligence |
+| WeatherPortal bundle loaded before cards visible | Dynamic import via `next/dynamic` — cards render as HTML first, animations load after |
+| Auth state check causes layout shift | New `AuthPreloader` component in root layout preloads Supabase client in background |
 
 ## Dataset
 

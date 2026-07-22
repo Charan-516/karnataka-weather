@@ -18,6 +18,7 @@ A full-stack weather prediction platform for 30 districts of Karnataka. A Python
 | Backend | Python 3.11, FastAPI, XGBoost 2.0 | POST `/predict` — 15 features, 600 trees, rule overrides |
 | IoT Gateway | Python FastAPI, API key auth (`X-Api-Key`) | POST `/iot/create-session`, POST `/iot/sensor-data` |
 | Intelligence Service | Python FastAPI, Open-Meteo + Overpass + Wikimedia | GET `/intelligence?lat=&lon=` — reverse geocode, weather data, nearby places |
+| Caching Layer | Pure Python `TTLCache` (no external deps) | Per-source caches (weather 2min, places 6hr, wiki 24hr, wikimedia 6hr, news 30min, LLM 2min) + district-level 2-min cache with priority pre-warming |
 | LLM Summarizer | Gemini + Groq fallback via `asyncio.gather(return_exceptions=True)` | Natural-language weather summaries in `weather_intelligence.py` |
 | Wokwi ESP32 | Wokwi simulator, Arduino sketch (`DHT22 + BMP180 + Potentiometer + OLED`) | Simulated IoT sensor hardware |
 | ML Training | Python (XGBoost + SMOTE + pandas) | Offline training on 500-record CSV |
@@ -26,7 +27,8 @@ A full-stack weather prediction platform for 30 districts of Karnataka. A Python
 | Loading screen | Pure CSS 3D transforms + keyframes | Cold start delay masking (3 variants: default, IoT, Intelligence) |
 | Frontend host | Vercel Hobby (free) | Auto-deploy from git push |
 | Backend host | Render Web Service (free) | 512 MB RAM, 0.1 CPU, 15-min idle spin-down |
-| CORS + Rate Limiting | `slowapi`, `CORSMiddleware` | Origin whitelist, per-IP request throttling |
+| CORS + Rate Limiting | `slowapi`, `CORSMiddleware` | Origin whitelist, per-IP request throttling (10/min intelligence, 30/min predict/IoT) |
+| Caching | Pure Python `TTLCache` | Per-source caches + district-level 2-min cache with priority pre-warming |
 | Security | `next.config.mjs` headers | `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` |
 
 **Architecture decision:** Python backend chosen over TypeScript XGBoost port for simpler training iteration, easier model updates, and access to standard ML ecosystem. Cold start latency (30-60s) is masked by a 3D CSS loading screen.
@@ -104,11 +106,12 @@ karnataka-weather/
 │   │   └── wokwi.toml                        # Wokwi simulator config
 │   └── services/
 │       ├── prediction_utils.py               # XGBoost training, feature engineering, rule overrides
+│       ├── cache.py                          # TTLCache: per-source + district-level caching (pure Python)
 │       ├── iot_gateway.py                    # IoT session management + sensor data ingestion (API key auth)
 │       ├── iot_manager.py                    # In-memory IoT session store
-│       ├── weather_intelligence.py           # Location-based weather + LLM summary (Gemini/Groq fallback)
-│       ├── llm_summarizer.py                 # Gemini → Groq fallback with asyncio.gather(return_exceptions=True)
-│       ├── static_places.py                  # Curated nearby-places dataset
+│       ├── weather_intelligence.py           # Location-based weather + LLM summary + district-level caching
+│       ├── llm_summarizer.py                 # Gemini → Groq fallback with 2-min TTL cache
+│       ├── static_places.py                  # Curated nearby-places dataset (Overpass fallback)
 │       ├── response_merger.py                # Merges Open-Meteo + Overpass + Wikidata into unified response
 │       └── sources/
 │           ├── overpass.py                   # Overpass API (nearby landmarks)
@@ -134,7 +137,8 @@ karnataka-weather/
 │   └── auth/callback/route.ts               # Supabase OAuth callback
 ├── src/components/
 │   ├── layout/
-│   │   └── LenisProvider.tsx                 # Smooth scroll provider
+│   │   ├── LenisProvider.tsx                 # Conditional smooth scroll (skips on portal pages)
+│   │   └── AuthPreloader.tsx                 # Background Supabase client preload on app mount
 │   ├── portals/
 │   │   ├── WeatherPortal.tsx                 # CometCard with 3D tilt animation
 │   │   └── PortalGlow.tsx                   # Glow effects for portal cards
@@ -209,9 +213,11 @@ Updated to reflect current official Kannada names:
 
 **Intelligence Mode:**
 1. Portal → Select "Intelligence" → `GET /intelligence?lat=&lon=&district=`
-2. Backend queries Open-Meteo, Overpass, Wikidata, RSS, Wikipedia
-3. LLM summarizes via Gemini (fallback: Groq) using `asyncio.gather(return_exceptions=True)`
-4. Results displayed with nearby places, images, and natural-language summary
+2. Backend checks district-level cache (2-min TTL). On cache hit: returns in ~40ms (60x speedup).
+3. On cache miss: queries Open-Meteo, Overpass, Wikidata, RSS, Wikipedia concurrently
+4. LLM summarizes via Gemini (fallback: Groq) using `asyncio.gather(return_exceptions=True)`
+5. Response cached at district level; results displayed with nearby places, images, and natural-language summary
+6. **Cache pre-warming:** On server start, background thread pre-caches all 31 districts with 30s timeout per district
 
 **Cold start handling:**
 - Render spins down after 15 min idle
@@ -409,6 +415,11 @@ Same CSS 3D cube foundation, themed for Intelligence mode.
 | Missing security headers | No security headers on Next.js responses | Added `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` in `next.config.mjs` |
 | Loading screen flash on IoT/Intelligence | Same default loader used for all modes | Created dedicated `loader-iot.tsx` and `loader-wi.tsx` variants |
 | Overpass/Wikimedia error swallowing | Errors silently ignored without logging | Added error logging in `overpass.py`, `wikimedia.py`, `_safe()` |
+| `/intelligence` too slow for 100 concurrent users | No caching on 5-10s multi-source endpoint | Added TTL caching layer: per-source caches + district-level 2-min cache (60x speedup: 2.39s → 0.04s) |
+| Overpass API flaky on shared IPs | Render VPS shares IP, Overpass rate-limits aggressively | Added `static_places.py` fallback with 10-20 hardcoded popular places per district |
+| Portal pages laggy (jank) | Smooth scroll rAF loop runs on non-scrollable pages | Conditional `LenisProvider`: skips rAF on /portal, /intelligence/portal, /intelligence/select, /intelligence |
+| WeatherPortal bundle loaded before visible | Full JS bundle loaded on mount before cards are visible | Dynamic import via `next/dynamic` — cards render as HTML first, animations load after |
+| Auth state causes layout shift | No preloading of Supabase client on mount | New `AuthPreloader` component in root layout preloads client in background |
 
 ---
 
@@ -418,6 +429,10 @@ Same CSS 3D cube foundation, themed for Intelligence mode.
 |--------|-------|
 | Inference time (Render, warm) | <50ms |
 | Cold start (Render) | 30-60s (masked by loading screen) |
+| Intelligence endpoint (uncached) | 2.39s (6-source concurrent fetch + LLM) |
+| Intelligence endpoint (cached) | 0.04s (district-level cache hit) |
+| Cache speedup | 60x (2.39s → 0.04s) |
+| Cache TTLs | weather 2min, places 6hr, wiki 24hr, wikimedia 6hr, news 30min, LLM 2min |
 | Canvas FPS | 60 FPS (all conditions) |
 | Model size | ~300KB (XGBoost native) |
 | Dead code removed | ~6.8MB (XGBoost client + model JSON) |

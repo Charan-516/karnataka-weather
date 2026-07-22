@@ -9,7 +9,7 @@
 **Title:** Karnataka Weather — AI-Powered Prediction Platform
 
 **Speaker Notes:**
-"Good morning/afternoon everyone. I'm presenting Karnataka Weather — a full-stack ML platform that predicts weather conditions for 30 districts of Karnataka using XGBoost with a Python FastAPI backend deployed on Render. The system supports three prediction modes: Manual input via orbital sliders, live IoT sensor data from an ESP32 simulator, and AI-powered Intelligence analysis using Open-Meteo, OpenStreetMap, and LLM summarization. A cinematic frontend on Vercel calls a Python ML backend on Render, with a 3D loading screen that masks the 30-60 second Render cold start."
+"Good morning/afternoon everyone. I'm presenting Karnataka Weather — a full-stack ML platform that predicts weather conditions for 30 districts of Karnataka using XGBoost with a Python FastAPI backend deployed on Render. The system supports three prediction modes: Manual input via orbital sliders, live IoT sensor data from an ESP32 simulator, and AI-powered Intelligence analysis using Open-Meteo, OpenStreetMap, and LLM summarization. A cinematic frontend on Vercel calls a Python ML backend on Render, with a 3D loading screen that masks the 30-60 second Render cold start. The intelligence endpoint uses a TTL caching layer that delivers 60x speedup on cache hits, with priority pre-warming of all 31 districts on server startup."
 
 **Key Talking Points:**
 - Geographic scope: 30 Karnataka districts
@@ -188,6 +188,8 @@ The backend applies 15 engineered features, runs them through 100 XGBoost trees 
 - <50ms inference after warm-up
 - Frontend loading screen masks cold start
 - CORS + rate limiting via slowapi
+- **TTL caching layer** — per-source caches (weather 2min, places 6hr, wiki 24hr, wikimedia 6hr, news 30min, LLM 2min) + district-level 2-min cache
+- **Priority cache pre-warming** — background thread pre-caches all 31 districts on startup; if user hits a district being pre-warmed, system waits for it
 - Security headers (X-Content-Type-Options, X-Frame-Options, etc.)
 
 ---
@@ -308,11 +310,13 @@ The backend applies 15 engineered features, runs them through 100 XGBoost trees 
 
 **Key Points:**
 - Open-Meteo: 7-day forecast (temperature, humidity, wind, precipitation)
-- Overpass API: local infrastructure (hospitals, markets, transport)
+- Overpass API: local infrastructure (hospitals, markets, transport) — with static fallback for flaky API
 - Wikimedia Commons: landmark images
-- Gemini/Groq LLM: natural language weather summary
+- Gemini/Groq LLM: natural language weather summary (2-min cached)
 - Provider fallback: Gemini first, Groq if Gemini fails
 - asyncio.gather(return_exceptions=True) for timeout isolation
+- **District-level caching:** Full response cached per district (2-min TTL), giving 60x speedup (2.39s → 0.04s)
+- **Priority pre-warming:** Background thread pre-caches all 31 districts on server start
 - Rate limited: 10 requests/minute
 
 ---
@@ -359,6 +363,9 @@ The backend applies 15 engineered features, runs them through 100 XGBoost trees 
 | Inference time (Render) | <50ms (after warm) |
 | Canvas FPS | 60 FPS (all 6 conditions) |
 | Cold start | 30-60s (masked by loading screen) |
+| Intelligence endpoint (uncached) | 2.39s (6-source fetch + LLM) |
+| Intelligence endpoint (cached) | 0.04s (district-level cache hit) |
+| Cache speedup | 60x |
 | First-load JS | 103KB shared |
 | Build time | ~2 min |
 | IoT data interval | 10 seconds |
@@ -385,6 +392,11 @@ The backend applies 15 engineered features, runs them through 100 XGBoost trees 
 | Dead client-side XGBoost (6.8MB) | Deleted xgboost.ts + xgboost_model.json |
 | 13 dead files bloating bundle | Removed legacy Three.js, unused components, debug scripts |
 | Missing security headers | Added X-Content-Type-Options, X-Frame-Options, etc. in next.config.mjs |
+| Intelligence too slow for 100 users | TTL caching layer: 60x speedup (2.39s → 0.04s) with district-level 2-min cache |
+| Overpass API flaky on shared IPs | Static place fallback with 10-20 hardcoded places per district |
+| Portal pages laggy | Conditional LenisProvider skips smooth scroll on non-scrollable pages |
+| WeatherPortal bundle slow load | Dynamic import via next/dynamic — HTML first, JS after |
+| Auth layout shift | AuthPreloader component preloads Supabase client on mount |
 
 ---
 
@@ -407,7 +419,7 @@ The backend applies 15 engineered features, runs them through 100 XGBoost trees 
 
 **Title:** Conclusion
 
-"Karnataka Weather demonstrates that ML-powered weather prediction can be deployed without expensive infrastructure. A Python FastAPI backend on Render's free tier handles XGBoost inference, while a cinematic Next.js frontend on Vercel provides an immersive user experience. The system supports three prediction modes — Manual, IoT, and Intelligence — making it accessible to users with varying technical capabilities. The Wokwi ESP32 integration proves that real sensor hardware can feed live data into the ML pipeline. The 3D loading screen elegantly handles the cold-start latency of free hosting. The CometCard 3D tilt animation provides an engaging mode selection experience. The code is open-source at `github.com/Charan-516/karnataka-weather`."
+"Karnataka Weather demonstrates that ML-powered weather prediction can be deployed without expensive infrastructure. A Python FastAPI backend on Render's free tier handles XGBoost inference, while a cinematic Next.js frontend on Vercel provides an immersive user experience. The system supports three prediction modes — Manual, IoT, and Intelligence — making it accessible to users with varying technical capabilities. The Wokwi ESP32 integration proves that real sensor hardware can feed live data into the ML pipeline. The intelligence endpoint uses a TTL caching layer with priority pre-warming to deliver 60x speedup on cache hits, enabling the system to handle 100 concurrent users within external API rate limits. The 3D loading screen elegantly handles the cold-start latency of free hosting. The CometCard 3D tilt animation provides an engaging mode selection experience. The code is open-source at `github.com/Charan-516/karnataka-weather`."
 
 ---
 

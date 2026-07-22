@@ -131,6 +131,30 @@ This document logs all structural updates, architectural enhancements, and provi
 - **Wokwi config** — Created `backend/wokwi/wokwi.toml` with all component wiring
 - **API_HOST** — Set to `https://karnataka-weather-uxdg.onrender.com` (live Render backend)
 
+### Phase 6: TTL Caching Layer + Frontend Performance
+
+#### Backend Caching (8 files modified +1 new)
+
+- **`backend/services/cache.py`** (NEW) — `TTLCache` class (pure Python, no external dependencies) with `get()`, `set()`, `invalidate()`, `is_cached()` methods. 7 cache instances + `computing` set.
+- **Per-source caches** with optimized TTLs:
+  - Weather (Open-Meteo): 2 minutes
+  - Places (Overpass): 6 hours
+  - Wikipedia: 24 hours
+  - Wikimedia Commons: 6 hours
+  - News (RSS): 30 minutes
+  - LLM summaries: 2 minutes
+- **District-level intelligence cache** (`district_intelligence_cache`): 2-minute TTL, caches full aggregated responses per district — verified 60x speedup (2.39s → 0.04s).
+- **Priority cache pre-warming**: `prewarm_cache()` background thread pre-caches all 31 districts on server start with 30s timeout per district. `computing` set prevents duplicate work.
+- **Priority wait logic**: If user requests a district being pre-warmed, waits up to10s for cache to populate.
+- **Files modified**: `main.py` (prewarm thread), `services/cache.py` (new), `services/weather_intelligence.py` (cache + priority wait), `services/llm_summarizer.py` (LLM cache), `services/sources/open_meteo.py` (weather cache), `services/sources/overpass.py` (places cache), `services/sources/wikipedia.py` (wiki cache), `services/sources/wikimedia.py` (wikimedia cache), `services/sources/rss_news.py` (news cache)
+
+#### Frontend Performance (3 fixes across 4 files +1 new)
+
+- **Fix 1: Dynamic import WeatherPortal** — `src/app/portal/page.tsx` and `src/app/intelligence/portal/page.tsx` use `next/dynamic` to load `WeatherPortal`. Cards render as full HTML first, animations load after.
+- **Fix 2: Conditional Lenis** — `src/components/layout/LenisProvider.tsx` checks current pathname. Skips smooth scroll rAF loop on non-scrollable pages: `/portal`, `/intelligence/portal`, `/intelligence/select`, `/intelligence`.
+- **Fix 3: Auth preloading** — New `src/components/layout/AuthPreloader.tsx` component mounted in `src/app/layout.tsx`. Preloads Supabase browser client in background on app mount to prevent layout shift on first auth check.
+- **Static place fallback** — `backend/services/static_places.py` provides 10-20 hardcoded popular places per district as fallback when Overpass API times out (flaky on shared Render VPS IPs).
+
 ---
 
 ## Correct Execution Protocol
@@ -194,6 +218,10 @@ graph TD
     E -->|POST /iot/sensor-data| G
     F -->|GET /intelligence| G
     G -->|Feature Evaluation| H[XGBoost Classifier]
+    G -->|TTL Cache Layer| N[Cache Manager]
+    N -->|Cache Hit (0.04s)| K[Intelligence Response]
+    N -->|Cache Miss (2.39s)| O[6-Source Fetch + LLM]
+    O --> K
     H -->|Inverses Label| I[Predict Response]
     I -->|Renders Result| J[Result Screen]
     G -->|Open-Meteo + Overpass + Wikimedia + LLM| K[Intelligence Response]

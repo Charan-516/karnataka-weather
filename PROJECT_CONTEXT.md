@@ -65,13 +65,14 @@ karnataka-weather/
 │   │   └── wokwi.toml               # Wokwi simulator config
 │   └── services/
 │       ├── __init__.py
+│       ├── cache.py                # TTLCache: per-source + district-level caching
 │       ├── prediction_utils.py      # Feature engineering (15 features) + rule overrides (8 rules)
 │       ├── iot_gateway.py           # FastAPI router: /iot/create-session, /iot/sensor-data (API key auth)
 │       ├── iot_manager.py           # In-memory IoT session management (thread-safe, auto-cleanup)
-│       ├── weather_intelligence.py  # Orchestrator: concurrent data fetching from all sources + LLM summary
-│       ├── llm_summarizer.py        # LLM fallback chain: Gemini first → Groq fallback
+│       ├── weather_intelligence.py  # Orchestrator: concurrent data fetching + district-level caching + priority wait
+│       ├── llm_summarizer.py        # LLM fallback chain: Gemini → Groq with 2-min TTL cache
 │       ├── response_merger.py       # Merges multi-source responses + builds _available array
-│       ├── static_places.py         # Static place data per district (30 districts)
+│       ├── static_places.py         # Static place data per district (30 districts, Overpass fallback)
 │       └── sources/
 │           ├── __init__.py
 │           ├── open_meteo.py        # Open-Meteo weather API (current + 7-day forecast)
@@ -82,7 +83,7 @@ karnataka-weather/
 └── src/
     ├── app/
     │   ├── globals.css              # ~40 lines essential CSS + keyframes + range thumb
-    │   ├── layout.tsx               # Root <html>, LenisProvider, Google Fonts
+    │   ├── layout.tsx               # Root <html>, LenisProvider, AuthPreloader, Google Fonts
     │   ├── page.tsx                 # "/" — Login/Signup with 6-split weather backgrounds
     │   ├── favicon.ico
     │   ├── map/page.tsx             # "/map" — SVG district selector (30 districts, scaled 0.67)
@@ -109,7 +110,8 @@ karnataka-weather/
     │   └── weatherIntelligence.ts   # TypeScript client for /intelligence endpoint
     ├── components/
     │   ├── layout/
-    │   │   └── LenisProvider.tsx    # Lenis smooth scroll + ResizeObserver
+    │   │   ├── LenisProvider.tsx    # Conditional smooth scroll (skips on non-scrollable pages)
+    │   │   └── AuthPreloader.tsx    # Background Supabase client preload on app mount
     │   ├── portals/
     │   │   ├── WeatherPortal.tsx    # CometCard with 3D tilt, cursor-following glare, hover reveal
     │   │   └── PortalGlow.tsx       # Cursor-following ambient glow overlay
@@ -552,6 +554,15 @@ Deployed at: `https://karnataka-weather-uxdg.onrender.com`
 - Concurrent fetching via `asyncio.gather()` from 6 sources.
 - Source timeout handling — individual failures don't block other sources.
 - `_safe()` wrapper logs failures and returns defaults.
+- **District-level intelligence cache** (2-min TTL) — caches full district responses, giving 60x speedup (2.39s → 0.04s) for cached districts.
+- **Priority wait logic** — if user requests a district being pre-warmed, waits up to 10s for cache to populate.
+- **Priority cache pre-warming** — background thread pre-caches all 31 districts on server start with 30s timeout per district.
+
+### Caching Layer (`backend/services/cache.py`)
+- `TTLCache` class (pure Python, no external dependencies) with `get()`, `set()`, `invalidate()`, and `is_cached()` methods.
+- Per-source caches with optimized TTLs: weather 2min, places 6hr, wiki 24hr, wikimedia 6hr, news 30min, LLM 2min.
+- `district_intelligence_cache` — district-level 2-min cache storing full aggregated responses.
+- `computing` set tracks districts currently being pre-warmed to prevent duplicate work.
 
 ### Data Sources (`backend/services/sources/`)
 | Source | Module | Data |
@@ -571,6 +582,7 @@ Deployed at: `https://karnataka-weather-uxdg.onrender.com`
 - Falls through on 429 rate limit or any error.
 - Generates 3-4 sentence summary about the district's weather and visitor information.
 - Returns `None` if all providers fail (summary is optional, not required for response).
+- **LLM cache** (2-min TTL) — caches summary per district+place combination to avoid redundant LLM calls.
 
 ---
 
@@ -619,6 +631,8 @@ Deployed at: `https://karnataka-weather-uxdg.onrender.com`
 3. **Profile photo size limit** — Supabase `user_metadata` has size limits. The 150px JPEG thumbnail (~5-15KB) stays within limits, but very large metadata updates may be silently dropped. localStorage provides fallback persistence.
 4. **No `onError` fallback for external images** — Unsplash/Pexels URLs could fail silently; the intelligence page has `onError` hide-fallback but result page cards do not.
 5. **Render free tier cold start** — First request after 15 min idle takes 30-60s. Loading screens mask this but user must wait.
+6. **Cache memory usage on free tier** — 31 districts × ~50KB per cached response ≈ 1.5MB extra RAM on Render's 512MB free tier. Acceptable but should be monitored.
+7. **Overpass API remains flaky** — Static place fallback handles failures but quality is lower than live Overpass data.
 
 ---
 
