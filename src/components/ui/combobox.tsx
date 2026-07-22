@@ -33,11 +33,6 @@ export default function PlaceCombobox({
       p.type.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  // Reset highlighted index when filter changes
-  useEffect(() => {
-    setHighlightedIndex(0);
-  }, [searchValue]);
-
   const handleOpen = useCallback(() => {
     setOpen(true);
     setSearchValue("");
@@ -214,7 +209,8 @@ export default function PlaceCombobox({
           value={open ? searchValue : selectedPlace?.name || ""}
           onChange={(e) => {
             if (!open) handleOpen();
-            setSearchValue(e.target.value);
+                    setSearchValue(e.target.value);
+                    setHighlightedIndex(0);
           }}
           onFocus={() => {
             if (!open) handleOpen();
@@ -312,7 +308,7 @@ export default function PlaceCombobox({
                     opacity: 0.7,
                   }}
                 >
-                  No places found matching "{searchValue}"
+                  No places found matching &quot;{searchValue}&quot;
                 </div>
               ) : (
                 filtered.map((place, idx) => {
