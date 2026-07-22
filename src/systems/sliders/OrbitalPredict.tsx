@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Droplets, Gauge, Wind, Thermometer, Sun } from "lucide-react"
+import { OutlineButton, SolidButton } from "@/components/ui/button"
 
 interface VariableConfig {
   key: string
@@ -274,7 +275,7 @@ export default function OrbitalPredict({
                 transform: 'translateX(-50%)',
                 marginTop: '10px',
                 fontFamily: 'Space Mono, monospace',
-                fontSize: '9px',
+                fontSize: '13px',
                 letterSpacing: '0.12em',
                 color: '#3d1f0a',
                 whiteSpace: 'nowrap',
@@ -386,7 +387,7 @@ export default function OrbitalPredict({
 
             <p style={{
               fontFamily: 'Space Mono, monospace',
-              fontSize: '10px',
+              fontSize: '13px',
               lineHeight: 1.7,
               color: '#5a3a2a',
               letterSpacing: '0.02em',
@@ -409,10 +410,10 @@ export default function OrbitalPredict({
               }}>
                 <span style={{
                   fontFamily: 'Space Mono, monospace',
-                  fontSize: '9px',
+                  fontSize: '13px',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: '#3d1f0a',
+                  color: '#2a1a0a',
                 }}>
                   Energy Level
                 </span>
@@ -425,7 +426,7 @@ export default function OrbitalPredict({
                   {expandedVar.step >= 1
                     ? Math.round(expandedVar.value)
                     : expandedVar.value.toFixed(1)}
-                  <span style={{ fontSize: '10px', fontWeight: 400, marginLeft: '2px', opacity: 0.7 }}>
+                  <span style={{ fontSize: '13px', fontWeight: 400, marginLeft: '2px', opacity: 0.7 }}>
                     {expandedVar.unit}
                   </span>
                 </span>
@@ -476,7 +477,7 @@ export default function OrbitalPredict({
                 justifyContent: 'space-between',
                 marginTop: '4px',
                 fontFamily: 'Space Mono, monospace',
-                fontSize: '8px',
+                fontSize: '11px',
                 color: '#3d1f0a',
                 opacity: 0.5,
               }}>
@@ -496,46 +497,24 @@ export default function OrbitalPredict({
         gap: '16px',
         paddingTop: '4px',
       }}>
-        <div
-          onClick={onBack}
-          style={{
-            fontFamily: 'Space Mono, monospace',
-            fontSize: '10px',
-            letterSpacing: '0.15em',
-            color: '#3d1f0a',
-            cursor: 'pointer',
-            textTransform: 'uppercase',
-            opacity: 0.7,
-            transition: 'opacity 0.2s',
-          }}
-        >
-          ← Change district
-        </div>
+        <OutlineButton onClick={onBack}>
+          ← CHANGE DISTRICT
+        </OutlineButton>
 
-        <button
+        <SolidButton
           onClick={onSubmit}
           disabled={loading}
-          style={{
-            background: loading
-              ? 'rgba(139,69,19,0.4)'
-              : '#8b4513',
-            color: '#fff8f0',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '14px 32px',
-            fontFamily: 'Space Mono, monospace',
-            fontSize: '11px',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s',
-            boxShadow: loading
-              ? 'none'
-              : '0 4px 24px rgba(139,69,19,0.25)',
-          }}
+          style={{ opacity: loading ? 0.4 : 1 }}
         >
-          {loading ? 'Reading atmosphere...' : 'Predict Weather'}
-        </button>
+          <svg xmlns="http://www.w3.org/2000/svg" className="arr-2" viewBox="0 0 24 24">
+            <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+          </svg>
+          <span className="text">{loading ? 'READING ATMOSPHERE...' : 'PREDICT WEATHER'}</span>
+          <span className="circle" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="arr-1" viewBox="0 0 24 24">
+            <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+          </svg>
+        </SolidButton>
       </div>
     </div>
   )

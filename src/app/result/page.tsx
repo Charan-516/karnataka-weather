@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { AuthManager } from '@/lib/auth'
+import { SolidButton, OutlineButton } from '@/components/ui/button'
 /* eslint-disable @next/next/no-img-element */
 
 import { WEATHER_CONTENT } from '@/lib/weatherContent'
@@ -175,12 +176,14 @@ function ResultContent() {
     const confidence = parseFloat(params.get('confidence') || '0.75')
     const isDark = DARK_CONDITIONS.includes(condition)
     const accentColor = CONDITION_TEXT_COLORS[condition] || (isDark ? '#fff8f0' : '#3d1f0a')
-    const textColor = accentColor
-    const mutedColor = accentColor
+    const textColor = condition === 'Cloudy' ? '#000000' : accentColor
+    const mutedColor = condition === 'Cloudy' ? '#000000' : accentColor
     const weatherContent = WEATHER_CONTENT[condition] || WEATHER_CONTENT.Sunny
     const CITY_ALIAS: Record<string, string> = {
         Bengaluru: 'BengaluruUrban',
         Bangalore: 'BengaluruUrban',
+        'BengaluruRural': 'BengaluruRural',
+        'BangaloreRural': 'BengaluruRural',
         Mangaluru: 'DakshinaKannada',
         Mangalore: 'DakshinaKannada',
         Hubli: 'Dharwad',
@@ -192,6 +195,10 @@ function ResultContent() {
         Chikmagalur: 'Chikkamagaluru',
         Gulbarga: 'Kalaburagi',
         Bijapur: 'Vijayapura',
+        Belgaum: 'Belagavi',
+        Chamrajnagar: 'Chamarajanagara',
+        Bagalkot: 'Bagalkote',
+        Koppal: 'Koppala',
         Coorg: 'Kodagu',
         Hospet: 'Vijayanagara',
         Hosapete: 'Vijayanagara',
@@ -350,7 +357,7 @@ function ResultContent() {
                                     background: 'rgba(0,0,0,0.3)',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     opacity: 0, transition: 'opacity 0.2s',
-                                    fontSize: '10px', color: '#fff',
+                                    fontSize: '14px', color: '#fff',
                                     fontFamily: 'Space Mono, monospace',
                                     letterSpacing: '0.1em',
                                 }}
@@ -366,9 +373,9 @@ function ResultContent() {
                         {/* Name */}
                         <div style={{
                             fontFamily: 'Space Mono, monospace',
-                            fontSize: '9px', letterSpacing: '0.2em',
-                            textTransform: 'uppercase', color: '#2a1a0a',
-                            marginBottom: '6px', opacity: 0.6,
+                            fontSize: '14px', letterSpacing: '0.2em',
+                            textTransform: 'uppercase', color: '#000000',
+                            marginBottom: '8px', opacity: 0.6,
                         }}>Name</div>
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
                             <input
@@ -383,70 +390,59 @@ function ResultContent() {
                                     borderRadius: '12px',
                                     border: `1px solid ${accentColor}30`,
                                     background: `${accentColor}08`,
-                                    color: '#3d1f0a',
+                                    color: '#000000',
                                     outline: 'none',
                                 }}
                             />
-                            <button
+                            <OutlineButton
                                 onClick={handleSaveName}
                                 disabled={saving || !editName.trim()}
                                 style={{
-                                    background: accentColor,
-                                    color: isDark ? '#3d1f0a' : '#fff8f0',
-                                    border: 'none',
-                                    borderRadius: '12px',
-                                    padding: '0 18px',
-                                    fontFamily: 'Space Mono, monospace',
-                                    fontSize: '10px',
-                                    letterSpacing: '0.1em',
-                                    cursor: 'pointer',
                                     opacity: saving || !editName.trim() ? 0.5 : 1,
+                                    padding: '0 20px',
+                                    fontSize: '14px',
                                 }}
                             >
-                                {saving ? '...' : 'Save'}
-                            </button>
+                                {saving ? '...' : 'SAVE'}
+                            </OutlineButton>
                         </div>
 
                         {/* Email */}
                         <div style={{
                             fontFamily: 'Space Mono, monospace',
-                            fontSize: '9px', letterSpacing: '0.2em',
-                            textTransform: 'uppercase', color: '#2a1a0a',
+                            fontSize: '13px', letterSpacing: '0.2em',
+                            textTransform: 'uppercase', color: '#000000',
                             marginBottom: '4px', opacity: 0.6,
                         }}>Email</div>
                         <div style={{
                             fontFamily: 'Playfair Display, serif',
-                            fontSize: '16px', color: '#3d1f0a',
+                            fontSize: '16px', color: '#000000',
                             marginBottom: '28px', opacity: 0.7,
                         }}>
                             {user?.email || '-'}
                         </div>
 
                         {/* Logout */}
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                width: '100%',
-                                background: 'transparent',
-                                border: `1px solid ${accentColor}30`,
-                                borderRadius: '12px',
-                                padding: '12px',
-                                color: '#a04020',
-                                fontFamily: 'Space Mono, monospace',
-                                fontSize: '10px',
-                                letterSpacing: '0.15em',
-                                textTransform: 'uppercase',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(160,64,32,0.08)' }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
-                        >
-                            Logout
-                        </button>
+                        <SolidButton onClick={handleLogout} className="logout-btn" style={{ width: '100%', justifyContent: 'center' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="arr-2" viewBox="0 0 24 24">
+                                <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                            </svg>
+                            <span className="text">LOGOUT</span>
+                            <span className="circle" />
+                            <svg xmlns="http://www.w3.org/2000/svg" className="arr-1" viewBox="0 0 24 24">
+                                <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                            </svg>
+                        </SolidButton>
                     </motion.div>
                 </div>
             )}
+
+            <style>{`
+                .logout-btn:hover > .circle {
+                    width: 800px !important;
+                    height: 800px !important;
+                }
+            `}</style>
 
             {/* Hero Section — Sticky Parallax Zoom */}
             <div style={{ position: 'relative', zIndex: 10 }}>
@@ -471,10 +467,10 @@ function ResultContent() {
                                 transition={{ duration: 0.8, delay: 0.3 }}
                                 style={{
                                     fontFamily: 'Space Mono, monospace',
-                                    fontSize: '11px',
+                                    fontSize: '15px',
                                     letterSpacing: '0.3em',
                                     color: mutedColor,
-                                    marginBottom: '16px',
+                                    marginBottom: '20px',
                                     textTransform: 'uppercase',
                                 }}
                             >
@@ -505,7 +501,7 @@ function ResultContent() {
                                 transition={{ duration: 0.8, delay: 1.0 }}
                                 style={{
                                     fontFamily: 'Space Mono, monospace',
-                                    fontSize: '10px',
+                                    fontSize: '14px',
                                     letterSpacing: '0.25em',
                                     color: mutedColor,
                                     marginBottom: '8px',
@@ -539,10 +535,10 @@ function ResultContent() {
                                 transition={{ duration: 0.8, delay: 1.3 }}
                                 style={{
                                     fontFamily: 'Space Mono, monospace',
-                                    fontSize: '12px',
+                                    fontSize: '14px',
                                     letterSpacing: '0.15em',
                                     color: mutedColor,
-                                    marginBottom: '40px',
+                                    marginBottom: '48px',
                                 }}
                             >
                                 {Math.round(confidence * 100)}% atmospheric confidence
@@ -554,44 +550,12 @@ function ResultContent() {
                                 transition={{ duration: 0.8, delay: 1.5 }}
                                 style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}
                             >
-                                <button
-                                    onClick={() => router.push(`/predict?city=${encodeURIComponent(city)}`)}
-                                    style={{
-                                background: isDark ? `${accentColor}18` : accentColor,
-                                color: isDark ? accentColor : '#fff8f0',
-                                border: isDark ? `1px solid ${accentColor}40` : 'none',
-                                        borderRadius: '8px',
-                                        padding: '14px 28px',
-                                        fontFamily: 'Space Mono, monospace',
-                                        fontSize: '10px',
-                                        letterSpacing: '0.15em',
-                                        textTransform: 'uppercase',
-                                        cursor: 'pointer',
-                                        backdropFilter: isDark ? 'blur(12px)' : 'none',
-                                        transition: 'all 0.3s',
-                                    }}
-                                >
-                                    Adjust
-                                </button>
-                                <button
-                                    onClick={() => router.push('/map')}
-                                    style={{
-                                        background: 'transparent',
-                                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : accentColor}40`,
-                                        borderRadius: '8px',
-                                        padding: '14px 28px',
-                                        color: mutedColor,
-                                        fontFamily: 'Space Mono, monospace',
-                                        fontSize: '10px',
-                                        letterSpacing: '0.15em',
-                                        textTransform: 'uppercase',
-                                        cursor: 'pointer',
-                                        backdropFilter: isDark ? 'blur(12px)' : 'none',
-                                        transition: 'all 0.3s',
-                                    }}
-                                >
-                                    New City
-                                </button>
+                                <OutlineButton onClick={() => router.push(`/predict?city=${encodeURIComponent(city)}`)}>
+                                    ADJUST
+                                </OutlineButton>
+                                <OutlineButton onClick={() => router.push('/map')}>
+                                    NEW CITY
+                                </OutlineButton>
                             </motion.div>
 
                             <motion.div
@@ -602,7 +566,7 @@ function ResultContent() {
                                     position: 'absolute',
                                     bottom: '30px',
                                     fontFamily: 'Space Mono, monospace',
-                                    fontSize: '9px',
+                                    fontSize: '14px',
                                     letterSpacing: '0.2em',
                                     color: mutedColor,
                                     animation: 'breathe 3s ease-in-out infinite',
@@ -628,21 +592,21 @@ function ResultContent() {
                 <RevealSection delay={0.1}>
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
-                        fontSize: '10px',
+                        fontSize: '15px',
                         letterSpacing: '0.3em',
                         color: mutedColor,
                         textTransform: 'uppercase',
-                        marginBottom: '8px',
+                        marginBottom: '12px',
                     }}>
                         Weather Gallery
                     </div>
                     <div style={{
                         fontFamily: 'Playfair Display, serif',
-                        fontSize: '28px',
+                        fontSize: '32px',
                         fontWeight: 300,
                         color: textColor,
                         letterSpacing: '-0.03em',
-                        marginBottom: '40px',
+                        marginBottom: '48px',
                     }}>
                         {condition} in Focus
                     </div>
@@ -709,7 +673,7 @@ function ResultContent() {
                                     </div>
                                     <p style={{
                                         fontFamily: 'Montserrat, sans-serif',
-                                        fontSize: '13px',
+                                        fontSize: '15px',
                                         fontWeight: 300,
                                         color: mutedColor,
                                         lineHeight: 1.8,
@@ -729,13 +693,13 @@ function ResultContent() {
                         marginBottom: '40px',
                     }}>
                         <div style={{
-                            fontFamily: 'Space Mono, monospace',
-                            fontSize: '10px',
-                            letterSpacing: '0.3em',
-                            color: mutedColor,
-                            textTransform: 'uppercase',
-                            marginBottom: '8px',
-                        }}>
+                        fontFamily: 'Space Mono, monospace',
+                        fontSize: '15px',
+                        letterSpacing: '0.3em',
+                        color: mutedColor,
+                        textTransform: 'uppercase',
+                        marginBottom: '12px',
+                    }}>
                             Travel Ideas
                         </div>
                         <div style={{
@@ -750,12 +714,12 @@ function ResultContent() {
                         </div>
                         <p style={{
                             fontFamily: 'Montserrat, sans-serif',
-                            fontSize: '13px',
+                            fontSize: '15px',
                             fontWeight: 300,
                             color: mutedColor,
                             lineHeight: 1.6,
                             maxWidth: '600px',
-                            marginBottom: '32px',
+                            marginBottom: '40px',
                         }}>
                             Karnataka offers incredible destinations that are at their absolute best during {condition.toLowerCase()} conditions.
                         </p>
@@ -811,13 +775,14 @@ function ResultContent() {
                                     }}>
                                         {item.destination}
                                     </div>
-                                    <p style={{
-                                        fontFamily: 'Montserrat, sans-serif',
-                                        fontSize: '12px',
-                                        fontWeight: 300,
-                                        color: mutedColor,
-                                        lineHeight: 1.7,
-                                        marginBottom: '8px',
+                                <p style={{
+                                    fontFamily: 'Montserrat, sans-serif',
+                                    fontSize: '15px',
+                                    fontWeight: 300,
+                                    color: mutedColor,
+                                    lineHeight: 1.6,
+                                    maxWidth: '520px',
+                                    marginBottom: '16px',
                                     }}>
                                         {item.description}
                                     </p>
@@ -829,18 +794,18 @@ function ResultContent() {
                                     }}>
                                         <span style={{
                                             fontFamily: 'Space Mono, monospace',
-                                            fontSize: '9px',
+                                            fontSize: '14px',
                                             letterSpacing: '0.1em',
                                             color: mutedColor,
                                             background: isDark ? 'rgba(255,255,255,0.08)' : `${accentColor}18`,
-                                            padding: '4px 10px',
+                                            padding: '6px 12px',
                                             borderRadius: '99px',
                                         }}>
                                             Best: {item.bestTime}
                                         </span>
                                         <span style={{
                                             fontFamily: 'Space Mono, monospace',
-                                            fontSize: '9px',
+                                            fontSize: '14px',
                                             letterSpacing: '0.05em',
                                             color: mutedColor,
                                             fontStyle: 'italic',
@@ -861,13 +826,13 @@ function ResultContent() {
                         marginBottom: '32px',
                     }}>
                         <div style={{
-                            fontFamily: 'Space Mono, monospace',
-                            fontSize: '10px',
-                            letterSpacing: '0.3em',
-                            color: mutedColor,
-                            textTransform: 'uppercase',
-                            marginBottom: '8px',
-                        }}>
+                        fontFamily: 'Space Mono, monospace',
+                        fontSize: '15px',
+                        letterSpacing: '0.3em',
+                        color: mutedColor,
+                        textTransform: 'uppercase',
+                        marginBottom: '12px',
+                    }}>
                             Pro Tips
                         </div>
                         <div style={{
@@ -910,7 +875,7 @@ function ResultContent() {
                                 </div>
                                 <p style={{
                                     fontFamily: 'Montserrat, sans-serif',
-                                    fontSize: '12px',
+                                    fontSize: '14px',
                                     fontWeight: 400,
                                     color: textColor,
                                     lineHeight: 1.6,
@@ -940,40 +905,12 @@ function ResultContent() {
                             Karnataka Weather
                         </div>
                         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                                <button
-                                    onClick={() => router.push(`/predict?city=${encodeURIComponent(city)}`)}
-                                    style={{
-                                        background: 'transparent',
-                                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : accentColor}40`,
-                                        borderRadius: '8px',
-                                        padding: '10px 20px',
-                                        color: mutedColor,
-                                        fontFamily: 'Space Mono, monospace',
-                                        fontSize: '9px',
-                                        letterSpacing: '0.15em',
-                                        textTransform: 'uppercase',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    ← Adjust Values
-                                </button>
-                                <button
-                                    onClick={() => router.push('/map')}
-                                    style={{
-                                        background: isDark ? `${accentColor}18` : accentColor,
-                                        color: isDark ? accentColor : '#fff8f0',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        padding: '10px 20px',
-                                        fontFamily: 'Space Mono, monospace',
-                                        fontSize: '9px',
-                                        letterSpacing: '0.15em',
-                                        textTransform: 'uppercase',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    New City
-                                </button>
+                                <OutlineButton onClick={() => router.push(`/predict?city=${encodeURIComponent(city)}`)}>
+                                    ← ADJUST VALUES
+                                </OutlineButton>
+                                <OutlineButton onClick={() => router.push('/map')}>
+                                    NEW CITY
+                                </OutlineButton>
                         </div>
                     </div>
                 </RevealSection>

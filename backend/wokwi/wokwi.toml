@@ -1,0 +1,87 @@
+wokwi_version = 1
+
+[firmware]
+file = "sketch.ino"
+
+[dependencies]
+adafruit_bmp085 = "1.2.1"
+adafruit_ssd1306 = "2.5.7"
+adafruit_gfx = "1.11.5"
+dht = "1.4.4"
+
+[wifi]
+ssid = "Wokwi-GUEST"
+password = ""
+
+[[hardware]]
+id = "esp32dev"
+type = "esp-32-devkit-c-v4"
+
+[[hardware]]
+id = "oled"
+type = "ssd1306"
+display = "128x64"
+address = "0x3C"
+
+[[hardware]]
+id = "dht22"
+type = "dht22"
+pin = "4"
+
+[[hardware]]
+id = "bmp180"
+type = "bmp180"
+address = "0x77"
+
+[[hardware]]
+id = "potentiometer"
+type = "potentiometer"
+pin = "34"
+
+[[hardware]]
+id = "oled_sda"
+type = "wire"
+from = "esp32dev.gpio21"
+to = "oled.SDA"
+
+[[hardware]]
+id = "oled_scl"
+type = "wire"
+from = "esp32dev.gpio22"
+to = "oled.SCL"
+
+[[hardware]]
+id = "bmp_sda"
+type = "wire"
+from = "esp32dev.gpio21"
+to = "bmp180.SDA"
+
+[[hardware]]
+id = "bmp_scl"
+type = "wire"
+from = "esp32dev.gpio22"
+to = "bmp180.SCL"
+
+[[hardware]]
+id = "dht_vcc"
+type = "wire"
+from = "esp32dev.5V"
+to = "dht22.VCC"
+
+[[hardware]]
+id = "dht_gnd"
+type = "wire"
+from = "esp32dev.GND.1"
+to = "dht22.GND"
+
+[[hardware]]
+id = "pot_vcc"
+type = "wire"
+from = "esp32dev.3V3"
+to = "potentiometer.VCC"
+
+[[hardware]]
+id = "pot_gnd"
+type = "wire"
+from = "esp32dev.GND.2"
+to = "potentiometer.GND"

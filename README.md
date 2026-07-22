@@ -1,86 +1,207 @@
 # Karnataka Weather
 
-A cinematic ML-powered weather prediction platform for the 30 districts of Karnataka, India. Users select a district on an interactive SVG map, adjust five atmospheric variables (humidity, pressure, wind speed, min/max temperature), and receive a weather classification backed by a 100-tree XGBoost model that runs entirely in the browser's API route — no Python backend required. The result is displayed on a full-screen page with a Canvas 2D weather animation, parallax-scrolled content, travel recommendations, and condition-specific styling.
+A cinematic weather prediction platform for all 30 districts of Karnataka, India. Users select a district on an interactive SVG map, choose a prediction mode (Manual, IoT, or Intelligence), and receive a weather classification displayed on a full-screen page with Canvas 2D weather animations, parallax scrolling, and district-specific travel content.
+
+The system uses a **Python FastAPI backend** with an XGBoost ML model for inference, and a **Next.js 15 frontend** for the UI.
+
+## Architecture
+
+```
+Frontend (Next.js 15, port 3000)           Backend (FastAPI, port 8000)
+┌───────────────────────────┐              ┌──────────────────────────────┐
+│  SVG Map (30 districts)   │              │  XGBoost ML Model            │
+│  Portal (3 mode cards)    │──── fetch ──│  /predict                    │
+│  Predict (orbital sliders)│              │  LLM Summarizer (Gemini/Groq)│
+│  Result (cinematic)       │              │  /iot/create-session         │
+│  IoT Live Dashboard       │──── fetch ──│  /iot/sensor-data            │
+│  Intelligence Portal      │──── fetch ──│  /intelligence               │
+│  Intelligence Select      │              │  Open-Meteo + Overpass       │
+│  History                  │              │  Wikimedia Commons API       │
+│  Supabase Auth            │              │  IoT API key auth            │
+│  Canvas 2D Backgrounds    │              │  CORS + rate limiting        │
+│  District/Place Data      │              │  Security headers            │
+│  CometCard 3D tilt        │              │                              │
+└───────────────────────────┘              └──────────────────────────────┘
+         │                                          │
+         │         Wokwi ESP32 Simulator            │
+         │    ┌─────────────────────────┐           │
+         │    │  DHT22 (temp + humidity) │──HTTP POST──┘
+         │    │  BMP180 (pressure)       │
+         │    │  Potentiometer (wind)    │
+         │    │  OLED SSD1306 (display)  │
+         │    └─────────────────────────┘
+```
+
+## Prediction Modes
+
+- **Manual** — Users adjust 5 atmospheric variables (humidity, pressure, wind speed, min/max temperature) via orbital sliders. XGBoost inference runs on the Python backend; an inline fallback handles server failures.
+- **IoT** — Live sensor data from Wokwi ESP32 simulator (DHT22 + BMP180 + potentiometer) or physical hardware. The backend returns ±3°C temperature bounds from the estimate. Controls allow pause/resume/reset/stop. API key authentication required.
+- **Intelligence** — AI-powered analysis that queries Open-Meteo forecast APIs, OpenStreetMap (Overpass) for local infrastructure, Wikimedia Commons for landmarks, and an LLM (Gemini or Groq) for natural language summaries. Returns 7-day forecast, landmarks, places, and a narrative summary.
 
 ## Techniques
 
-- **SVG map with mouse-following tooltip** — The district selector at [`src/app/map/page.tsx`](src/app/map/page.tsx) renders 30 GeoJSON-derived polygons as SVG `<path>` elements. Hover tracking via `onMouseMove` positions a fixed div at `e.clientX/clientY`, while `onMouseLeave` hides it. Click state toggles fill opacity and enables the "Continue" pill button.
-- **Orbital UI with click-to-expand cards** — The predict page at [`src/systems/sliders/OrbitalPredict.tsx`](src/systems/sliders/OrbitalPredict.tsx) arranges five parameter nodes in a circle using `Math.cos`/`Math.sin`. Clicking a node triggers `requestAnimationFrame`-based rotation that snaps the target to the 12-o'clock position via `shortestAngleDelta`, then reveals an expanded card with a range slider. Auto-rotation resumes when the card is dismissed.
-- **Canvas 2D weather backgrounds** — Six condition-specific components at [`src/systems/weather/backgrounds/`](src/systems/weather/backgrounds/) draw directly to a `<canvas>` via `requestAnimationFrame`. Techniques include radial gradients for atmospheric glow, arc-based particle fields (200 raindrops, 120 wind streaks), per-frame `Date.now()`-derived alpha pulsation, and [`ctx.save()`/`ctx.restore()`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/save) for layered lightning flashes in `StormyBackground.tsx`.
-- **Serverless XGBoost inference in TypeScript** — A 6.8 MB JSON model dump (100 trees, 6 classes, max depth 8) is loaded at module scope in [`src/lib/xgboost.ts`](src/lib/xgboost.ts). Each tree is a JSON node graph walked recursively by `predictTree()`. The function [`softmax()`](https://en.wikipedia.org/wiki/Softmax_function) normalises class scores. Rule-based overrides then correct meteorological blind spots (e.g., `humidity >= 88 && windSpeed >= 5 → Rainy`).
-- **Client-side fallback with mirrored rules** — The predict page at [`src/app/predict/page.tsx`](src/app/predict/page.tsx) includes an identical copy of the API's rule chain. If the `fetch` to `/api/predict` fails, the page navigates directly to the result page with the fallback prediction — the user never sees an error state.
-- **Parallax zoom via scroll listener** — The result page at [`src/app/result/page.tsx`](src/app/result/page.tsx) attaches a [`scroll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event) event listener (with `{ passive: true }`) that scales the sticky hero section from `1` to `0.88` and fades its opacity to `0` as the user scrolls past one viewport height.
-- **Auto-disconnecting IntersectionObserver** — The `useScrollReveal` hook in `src/app/result/page.tsx:27` creates an [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) that fires once per element, then calls `obs.unobserve(el)` to stop watching. This powers the sequential reveal of content cards, travel rows, and tips.
-- **Canvas-resized avatar uploads** — [`src/lib/auth.ts:108`](src/lib/auth.ts:108) loads the user's selected photo into a hidden `<img>`, draws it to a `<canvas>` at max 150 px via `CanvasRenderingContext2D.drawImage`, then exports as a JPEG data URL. The thumbnail is stored in Supabase `user_metadata` and cached to `localStorage` as a fallback when the metadata payload is silently dropped.
-- **CSS-only orbital breathing** — Three `@keyframes` in `globals.css:48-58` — `centerPulse`, `centerPing`, and `nodePulse` — create a pulsing core and orbiting glow effect using only CSS. The central orb uses two concentric `<div>` elements with staggered `animation-delay`.
-- **Dynamic import with `ssr: false`** — The weather backgrounds at [`src/app/result/page.tsx:11`](src/app/result/page.tsx:11) and the `OrbitalPredict` component are loaded with [`next/dynamic`](https://nextjs.org/docs/app/building-your-application/optimizing/lazy-loading) and `{ ssr: false }` to prevent server-side errors when accessing browser-only APIs like `CanvasRenderingContext2D`.
-- **Meteorological feature engineering** — The `engineerFeatures()` function in [`src/lib/xgboost.ts:40`](src/lib/xgboost.ts:40) derives 15 features from 5 raw inputs: `tempRange`, `tempMean`, `humidityWind`, `pressureAnomaly`, `stormIndex`, `heatDryIndex`, `fogIndex`, `humidityHigh`, `humidityLow`, and `windPower`. These are the same features the Python model was trained on.
+- **SVG map with mouse-following tooltip** — [`src/app/map/page.tsx`](src/app/map/page.tsx) renders 30 GeoJSON-derived polygons as SVG `<path>` elements. Hover tracking via `onMouseMove` positions a tooltip at cursor coordinates.
+- **Orbital UI with click-to-expand cards** — [`src/systems/sliders/OrbitalPredict.tsx`](src/systems/sliders/OrbitalPredict.tsx) arranges five parameter nodes in a circle. Clicking a node triggers `requestAnimationFrame`-based rotation that snaps to 12-o'clock, then reveals an expanded card with a range slider.
+- **Canvas 2D weather backgrounds** — Six condition-specific components in [`src/systems/weather/backgrounds/`](src/systems/weather/backgrounds/) draw continuous `requestAnimationFrame` loops on a `<canvas>`: radial gradients, arc-based particle fields, alpha pulsation, and layered lightning flashes.
+- **XGBoost ML inference (Python)** — A 100-tree, 6-class XGBoost model runs server-side in FastAPI. Feature engineering derives 15 features from 5 raw inputs via `engineer_features()` in [`backend/services/prediction_utils.py`](backend/services/prediction_utils.py).
+- **LLM summarization with provider fallback** — [`backend/services/llm_summarizer.py`](backend/services/llm_summarizer.py) tries Gemini first, then falls back to Groq. Uses `asyncio.gather(return_exceptions=True)` for timeout isolation.
+- **CometCard 3D tilt** — [`src/components/portals/WeatherPortal.tsx`](src/components/portals/WeatherPortal.tsx) uses `useMotionValue` + `useSpring` for mouse-tracking rotateX/rotateY with a glare overlay using `mix-blend-overlay`.
+- **Parallax zoom via scroll listener** — [`src/app/result/page.tsx`](src/app/result/page.tsx) scales the sticky hero from 1→0.88 and fades opacity to 0 as the user scrolls.
+- **Auto-disconnecting IntersectionObserver** — Sequential reveal of content cards via `useScrollReveal` hook that calls `obs.unobserve(el)` after firing once.
+- **IoT API key authentication** — [`backend/services/iot_gateway.py`](backend/services/iot_gateway.py) verifies `X-Api-Key` header against `IOT_API_KEY` env var for all IoT endpoints.
+- **Wokwi ESP32 integration** — [`backend/wokwi/sketch.ino`](backend/wokwi/sketch.ino) sends DHT22 + BMP180 + potentiometer data to the backend every 10 seconds via HTTP POST.
 
 ## Libraries & Fonts
 
-- **[Framer Motion](https://motion.dev)** — Spring-based entry animations: fade-up with blur, scale-in, and staggered delays on all pages.
-- **[Lenis](https://github.com/studio-freight/lenis)** — Smooth scrolling with custom cubic easing. Configured at [`src/components/layout/LenisProvider.tsx`](src/components/layout/LenisProvider.tsx) with `duration: 1.2` and `easing: (t) => 1 - Math.pow(1 - t, 3)`.
-- **[Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs)** — Authentication via `@supabase/ssr`. Supports email/password signup and Google OAuth with a callback route at [`src/app/auth/callback/route.ts`](src/app/auth/callback/route.ts).
-- **[Lucide React](https://lucide.dev)** — Icon set for the orbital variable nodes: Droplets (humidity), Gauge (pressure), Wind (wind speed), Thermometer (min temp), Sun (max temp).
-- **[Playfair Display](https://fonts.google.com/specimen/Playfair+Display)** — Serif headings, district names, and large condition text on the result page.
-- **[Space Mono](https://fonts.google.com/specimen/Space+Mono)** — Monospace for labels, metadata, button text, and small UI elements.
-- **[Montserrat](https://fonts.google.com/specimen/Montserrat)** — Sans-serif body text throughout.
+- **[Framer Motion](https://motion.dev)** — Spring-based entry animations: fade-up with blur, scale-in, and staggered delays.
+- **[Lenis](https://github.com/studio-freight/lenis)** — Smooth scrolling with custom cubic easing (configured in [`LenisProvider.tsx`](src/components/layout/LenisProvider.tsx)).
+- **[Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs)** — Authentication via `@supabase/ssr`. Email/password signup and Google OAuth.
+- **[Lucide React](https://lucide.dev)** — Icons for orbital variable nodes.
+- **[Playfair Display](https://fonts.google.com/specimen/Playfair+Display)** — Serif headings and district names.
+- **[Space Mono](https://fonts.google.com/specimen/Space+Mono)** — Monospace for labels and metadata.
+- **[Montserrat](https://fonts.google.com/specimen/Montserrat)** — Sans-serif body text.
 
 ## Project Structure
 
 ```
 karnataka-weather/
-├── .env.example
+├── .env.example                    # Frontend env template
 ├── .gitignore
-├── eslint.config.mjs
-├── next.config.mjs
+├── next.config.mjs                 # Security headers, image remote patterns
 ├── package.json
-├── postcss.config.mjs
 ├── tsconfig.json
-├── public/                          # Static assets (SVG icons)
-├── backend/                         # Python training scripts and CSV dataset
+├── public/                         # Static assets (SVG icons)
+├── backend/
+│   ├── main.py                     # FastAPI app entry point (CORS, rate limiting, security)
+│   ├── requirements.txt            # Python dependencies
+│   ├── .env                        # API keys (not committed)
+│   ├── karnataka_weather_500.csv   # Training dataset
+│   ├── wokwi/
+│   │   ├── sketch.ino              # ESP32 Wokwi simulator sketch
+│   │   └── wokwi.toml              # Wokwi project config
+│   └── services/
+│       ├── prediction_utils.py     # Feature engineering + model constants
+│       ├── iot_gateway.py          # IoT endpoints (API key auth)
+│       ├── iot_manager.py          # IoT session state management
+│       ├── weather_intelligence.py # Open-Meteo + Overpass + Wikimedia + LLM
+│       ├── llm_summarizer.py       # Gemini / Groq provider integration
+│       ├── static_places.py        # 30-district place data
+│       ├── response_merger.py      # Response merging utility
+│       └── sources/
+│           ├── overpass.py         # OpenStreetMap Overpass API
+│           ├── wikimedia.py        # Wikimedia Commons API
+│           ├── open_meteo.py       # Open-Meteo forecast API
+│           ├── rss_news.py         # RSS news feed
+│           └── wikipedia.py        # Wikipedia API
 ├── src/
 │   ├── app/
-│   │   ├── globals.css              # Design tokens, keyframes, input range styles
-│   │   ├── layout.tsx               # Root layout, font imports, LenisProvider
-│   │   ├── page.tsx                 # Login/signup with 6-split weather backgrounds
-│   │   ├── map/page.tsx             # SVG district selector (30 districts)
-│   │   ├── predict/page.tsx         # Orbital variable sliders + 6 preset buttons
-│   │   ├── result/page.tsx          # Full cinematic result page
-│   │   ├── api/predict/route.ts     # POST /api/predict — XGBoost inference
-│   │   └── auth/callback/route.ts   # Supabase OAuth exchange endpoint
+│   │   ├── globals.css             # Design tokens, keyframes, input range styles
+│   │   ├── layout.tsx              # Root layout, font imports, LenisProvider
+│   │   ├── page.tsx                # Login/signup with 6-split weather backgrounds
+│   │   ├── map/page.tsx            # SVG district selector (30 districts)
+│   │   ├── predict/page.tsx        # Orbital sliders + prediction mode selector
+│   │   ├── result/page.tsx         # Full cinematic result page
+│   │   ├── portal/page.tsx         # Mode selection portal (Manual, IoT, Intelligence)
+│   │   ├── iot/page.tsx            # IoT live dashboard with sensor controls
+│   │   ├── intelligence/
+│   │   │   ├── page.tsx            # Intelligence analysis page
+│   │   │   ├── portal/page.tsx     # Intelligence beyond-the-fold (District, Place cards)
+│   │   │   └── select/page.tsx     # Intelligence selection page
+│   │   ├── history/page.tsx        # Prediction history
+│   │   └── auth/callback/route.ts  # Supabase OAuth exchange endpoint
 │   ├── components/
-│   │   ├── layout/LenisProvider.tsx  # Smooth-scroll provider component
-│   │   └── ui/                      # Shadcn primitives (installed, unused)
+│   │   ├── layout/LenisProvider.tsx
+│   │   ├── portals/
+│   │   │   ├── WeatherPortal.tsx   # CometCard with 3D tilt + PortalGlow
+│   │   │   └── PortalGlow.tsx      # Cursor-following color glow
+│   │   └── ui/
+│   │       ├── loading-screen.tsx  # 3D CSS loading screen
+│   │       ├── loader-iot.tsx      # IoT-specific loading animation
+│   │       ├── loader-wi.tsx       # Intelligence-specific loading animation
+│   │       ├── animated-list.tsx   # Animated list component
+│   │       ├── button.tsx          # Shadcn button primitive
+│   │       └── combobox.tsx        # Combobox component
 │   ├── lib/
-│   │   ├── auth.ts                  # Supabase AuthManager
-│   │   ├── xgboost.ts              # TypeScript XGBoost inference engine
-│   │   ├── xgboost_model.json      # 6.8 MB model (100 trees, 6 classes)
-│   │   ├── utils.ts                 # cn() classname helper
-│   │   ├── weatherContent.ts        # Copy for all 6 weather conditions
-│   │   ├── districtContent.ts       # Copy for 28 district travel guides
-│   │   ├── cities.ts                # Legacy city coordinates (21 entries)
-│   │   ├── karnatakaDistricts.ts    # 30-district GeoJSON polygon data
-│   │   └── karnatakaBorder.ts       # Simplified Karnataka outline
+│   │   ├── auth.ts                 # Supabase AuthManager
+│   │   ├── utils.ts                # cn() classname helper
+│   │   ├── weatherContent.ts       # Copy for all 6 weather conditions
+│   │   ├── districtContent.ts      # Travel guides for all 30 districts
+│   │   ├── places.ts               # Place data for all 30 districts
+│   │   ├── karnatakaDistricts.ts   # District coordinates + SVG paths
+│   │   ├── history.ts              # Prediction history utility
+│   │   └── weatherIntelligence.ts  # Intelligence frontend utility
 │   └── systems/
 │       ├── weather/
-│       │   ├── WeatherBackground.tsx      # Dynamic import router for 6 canvases
-│       │   └── backgrounds/              # Canvas 2D per-condition renderers
-│       ├── sliders/OrbitalPredict.tsx     # Orbital node + expand card UI
-│       └── (legacy)
-│           ├── atmosphere/               # Three.js atmosphere components
-│           └── terrain/                  # Three.js terrain components
+│       │   ├── WeatherBackground.tsx   # Dynamic import router for 6 canvases
+│       │   └── backgrounds/            # Canvas 2D per-condition renderers
+│       └── sliders/
+│           └── OrbitalPredict.tsx      # Orbital node + expand card UI
 ```
 
-The **`src/systems/weather/backgrounds/`** directory contains six `'use client'` components — one per weather condition — each of which renders a continuous `requestAnimationFrame` loop on a fixed `<canvas>`. The **`backend/`** directory holds the original Python training pipeline (FastAPI, XGBoost, SMOTE) and the export script that produced `xgboost_model.json`. The **`src/lib/`** directory contains all data files: district polygons, weather copy, travel guides, and the TypeScript ML engine with its model JSON. The **`src/systems/atmosphere/`** and **`src/systems/terrain/`** directories contain legacy Three.js components that are no longer imported by any active page.
+## Setup
 
-## Run
+### Prerequisites
 
-```powershell
+- Node.js 18+
+- Python 3.10+
+- Supabase project (for auth)
+- Gemini API key and/or Groq API key (for LLM summaries)
+
+### Frontend
+
+```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # Production build
-npm run lint     # ESLint
+npm run dev        # http://localhost:3000
 ```
 
-No Python backend — inference runs inside Next.js.
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+cp .env.example .env   # fill in API keys
+python main.py          # http://localhost:8000
+```
+
+### Wokwi ESP32
+
+1. Go to [wokwi.com](https://wokwi.com)
+2. Create a new ESP32 project
+3. Paste the contents of `backend/wokwi/sketch.ino` into the code editor
+4. Add dependencies: `Adafruit BMP085`, `Adafruit SSD1306`, `Adafruit GFX`, `DHT sensor`
+5. Wire components: DHT22 (GPIO4), BMP180 (I2C), Potentiometer (GPIO34), OLED (I2C)
+6. Click Start — data is sent to your backend every 10 seconds
+
+### Environment Variables
+
+See [`.env.example`](.env.example) for the full list. Key variables:
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `NEXT_PUBLIC_API_URL` | Python backend URL |
+| `NEXT_PUBLIC_IOT_API_KEY` | API key for IoT endpoints |
+| `GEMINI_API_KEY` | Google Gemini API key for LLM summaries |
+| `GROQ_API_KEY` | Groq API key (fallback for LLM) |
+| `IOT_API_KEY` | Backend IoT endpoint authentication |
+| `CORS_ORIGINS` | Allowed CORS origins (comma-separated) |
+
+## Commands
+
+```bash
+npm run dev          # Start Next.js dev server
+npm run build        # Production build
+npm run start        # Start production server
+npm run lint         # ESLint
+```
+
+## Dataset
+
+The XGBoost model is trained on Karnataka weather station data with 6 classes: **Sunny**, **Cloudy**, **PartlyCloudy**, **Rainy**, **Stormy**, **Windy**. Training data includes historical readings of humidity, pressure, wind speed, and temperature, augmented with 15 engineered features (temperature range, storm index, fog index, etc.).

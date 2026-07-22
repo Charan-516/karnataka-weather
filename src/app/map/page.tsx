@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { AuthManager } from '@/lib/auth'
 import { GEO_DATA } from '@/lib/karnatakaDistricts'
+import { SolidButton } from '@/components/ui/button'
 
 const LNG_MIN = 74.051, LNG_MAX = 78.588
 const LAT_MIN = 11.582, LAT_MAX = 18.477
@@ -53,7 +54,7 @@ export default function MapPage() {
 
     const handleProceed = () => {
         if (!selected) return
-        router.push(`/predict?city=${encodeURIComponent(selected)}`)
+        router.push(`/portal?city=${encodeURIComponent(selected)}`)
     }
 
     return (
@@ -73,31 +74,33 @@ export default function MapPage() {
                     position: 'fixed',
                     left: tooltip.x,
                     top: tooltip.y,
-                    transform: 'translate(-50%, calc(-100% - 14px))',
+                    transform: 'translate(-50%, calc(-100% - 16px))',
                     pointerEvents: 'none',
                     zIndex: 100,
-                    background: 'rgba(255, 245, 235, 0.92)',
+                    background: 'rgba(255, 245, 235, 0.95)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(232, 173, 140, 0.5)',
-                    borderRadius: '10px',
-                    padding: '10px 18px',
-                    boxShadow: '0 8px 32px rgba(180,80,20,0.18)',
+                    border: '1.5px solid rgba(212, 132, 90, 0.55)',
+                    borderRadius: '12px',
+                    padding: '12px 20px',
+                    boxShadow: '0 10px 36px rgba(180,80,20,0.22)',
                     whiteSpace: 'nowrap',
                 }}>
                     <div style={{
                         fontFamily: 'Playfair Display, serif',
-                        fontSize: '17px',
+                        fontSize: '19px',
+                        fontWeight: 600,
                         color: '#3d1f0a',
                     }}>
                         {tooltip.name}
                     </div>
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
-                        fontSize: '10px',
-                        letterSpacing: '0.12em',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        letterSpacing: '0.14em',
                         textTransform: 'uppercase',
-                        color: '#3a2010',
-                        marginTop: '2px',
+                        color: '#b85a2b',
+                        marginTop: '4px',
                     }}>
                         Click to select
                     </div>
@@ -106,7 +109,7 @@ export default function MapPage() {
 
             {/* Scale wrapper for map card */}
             <div style={{
-                transform: 'scale(0.67)',
+                transform: 'scale(0.80)',
                 transformOrigin: 'center center',
             }}>
             {/* Main Glass Card */}
@@ -115,12 +118,12 @@ export default function MapPage() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                     style={{
-                        background: 'rgba(250, 242, 232, 0.85)',
+                        background: 'rgba(250, 242, 232, 0.92)',
                         backdropFilter: 'blur(40px)',
-                        border: '1px solid rgba(232, 173, 140, 0.3)',
-                        borderRadius: '28px',
-                        padding: '32px 36px 28px',
-                        width: '860px',
+                        border: '1.5px solid rgba(212, 132, 90, 0.35)',
+                        borderRadius: '32px',
+                        padding: '36px 44px 32px',
+                        width: '880px',
                         boxShadow: '0 24px 80px rgba(180,80,20,0.18)',
                     }}
                 >
@@ -128,29 +131,37 @@ export default function MapPage() {
                     <div style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        alignItems: 'flex-end',
+                        alignItems: 'center',
                     }}>
                         <div>
                             <div style={{
-                                fontFamily: 'Space Mono, monospace',
-                                fontSize: '10px',
-                                letterSpacing: '0.25em',
-                                textTransform: 'uppercase',
-                            color: '#2a1a0a',
+                            fontFamily: 'Space Mono, monospace',
+                            fontSize: '16px',
+                            fontWeight: 700,
+                            letterSpacing: '0.22em',
+                            textTransform: 'uppercase',
+                            color: '#3d1f0a',
                         }}>
                             Karnataka — Select District
                         </div>
                     </div>
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
-                        fontSize: '10px',
-                        color: '#2a1a0a',
-                        opacity: 0.7,
-                        }}>
+                            fontSize: '17px',
+                            fontWeight: 700,
+                            letterSpacing: '0.12em',
+                            color: '#3d1f0a',
+                            opacity: 0.9,
+                            background: 'rgba(212, 132, 90, 0.12)',
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            border: '1px solid rgba(212, 132, 90, 0.25)',
+                            }}>
                             30 districts
                         </div>
                     </div>
 
+                    <div style={{ height: 16 }} />
                     {/* SVG Map */}
                     <div style={{ width: '100%', aspectRatio: '500/560' }}>
                         <svg
@@ -217,21 +228,23 @@ export default function MapPage() {
                         </svg>
                     </div>
 
+                    <div style={{ height: 16 }} />
                     {/* Bottom Panel */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        height: '44px',
+                        height: '56px',
                     }}>
                         <div>
                             <div style={{
-                                fontFamily: 'Space Mono, monospace',
-                                fontSize: '10px',
-                                letterSpacing: '0.12em',
-                                textTransform: 'uppercase',
-                                color: '#2a1a0a',
-                                marginBottom: '4px',
+                            fontFamily: 'Space Mono, monospace',
+                            fontSize: '15px',
+                            fontWeight: 700,
+                            letterSpacing: '0.14em',
+                            textTransform: 'uppercase',
+                            color: '#3d1f0a',
+                            marginBottom: '4px',
                             }}>
                                 Selected District
                             </div>
@@ -241,28 +254,30 @@ export default function MapPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 style={{
                                     fontFamily: 'Playfair Display, serif',
-                                    fontSize: '22px',
+                                    fontSize: '32px',
+                                    fontWeight: 600,
                                     color: '#3d1f0a',
                                     letterSpacing: '-0.02em',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '8px',
+                                    gap: '10px',
                                 }}
                             >
                                 {selected ? (
                                     <>
                                         <span style={{
-                                            width: '6px',
-                                            height: '6px',
+                                            width: '8px',
+                                            height: '8px',
                                             borderRadius: '50%',
                                             background: '#d4845a',
                                             display: 'inline-block',
+                                            boxShadow: '0 0 10px #d4845a',
                                             animation: 'pulse 2s ease-in-out infinite',
                                         }} />
                                         {selected}
                                     </>
                                 ) : (
-                                    <span style={{ color: '#2a1a0a', fontSize: '16px' }}>
+                                    <span style={{ color: '#5c3d1e', fontSize: '24px', opacity: 0.85 }}>
                                         — hover and click a district
                                     </span>
                                 )}
@@ -270,59 +285,38 @@ export default function MapPage() {
                         </div>
 
                         {selected && (
-                            <motion.button
+                            <motion.div
                                 initial={{ opacity: 0, y: 4 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                onClick={handleProceed}
-                                style={{
-                                    background: '#d4845a',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '99px',
-                                    padding: '10px 24px',
-                                    fontFamily: 'Space Mono, monospace',
-                                    fontSize: '11px',
-                                    letterSpacing: '0.08em',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 16px rgba(212, 132, 90, 0.35)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                }}
                             >
-                                Continue →
-                            </motion.button>
+                                <SolidButton onClick={handleProceed}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="arr-2" viewBox="0 0 24 24">
+                                        <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                                    </svg>
+                                    <span className="text">CONTINUE</span>
+                                    <span className="circle" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="arr-1" viewBox="0 0 24 24">
+                                        <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                                    </svg>
+                                </SolidButton>
+                            </motion.div>
                         )}
                     </div>
                 </motion.div>
             </div>
 
-                <button
-                    onClick={async () => { await AuthManager.logout(); router.push('/') }}
-                    style={{
-                        position: 'fixed',
-                        bottom: '30px',
-                        right: '30px',
-                        zIndex: 200,
-                        background: 'rgba(255,245,238,0.7)',
-                        backdropFilter: 'blur(16px)',
-                        border: '1px solid rgba(232,173,140,0.4)',
-                        borderRadius: '8px',
-                        padding: '10px 18px',
-                        color: '#3a1a08',
-                        fontFamily: 'Space Mono, monospace',
-                        fontSize: '10px',
-                        letterSpacing: '0.15em',
-                        textTransform: 'uppercase',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 20px rgba(180,80,20,0.12)',
-                        transition: 'all 0.3s',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,245,238,0.9)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,245,238,0.7)' }}
-                >
-                    Logout
-                </button>
+                <div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 200 }}>
+                    <SolidButton onClick={async () => { await AuthManager.logout(); router.push('/') }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="arr-2" viewBox="0 0 24 24">
+                            <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                        </svg>
+                        <span className="text">LOGOUT</span>
+                        <span className="circle" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="arr-1" viewBox="0 0 24 24">
+                            <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+                        </svg>
+                    </SolidButton>
+                </div>
 
             <style>{`
         @keyframes pulse {

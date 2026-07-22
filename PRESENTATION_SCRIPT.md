@@ -9,15 +9,14 @@
 **Title:** Karnataka Weather — AI-Powered Prediction Platform
 
 **Speaker Notes:**
-"Good morning/afternoon everyone. I'm presenting Karnataka Weather — a full-stack ML platform that predicts weather conditions for 30 districts of Karnataka using XGBoost deployed entirely inside a Next.js application. The system takes five atmospheric inputs — temperature range, humidity, pressure, and wind speed — and predicts one of six conditions: Sunny, Cloudy, Rainy, Stormy, Foggy, or Windy. We eliminated the traditional Python backend by porting the XGBoost inference engine to TypeScript, allowing a single serverless deployment on Vercel."
+"Good morning/afternoon everyone. I'm presenting Karnataka Weather — a full-stack ML platform that predicts weather conditions for 30 districts of Karnataka using XGBoost with a Python FastAPI backend deployed on Render. The system supports three prediction modes: Manual input via orbital sliders, live IoT sensor data from an ESP32 simulator, and AI-powered Intelligence analysis using Open-Meteo, OpenStreetMap, and LLM summarization. A cinematic frontend on Vercel calls a Python ML backend on Render, with a 3D loading screen that masks the 30-60 second Render cold start."
 
 **Key Talking Points:**
 - Geographic scope: 30 Karnataka districts
-- Core technology: XGBoost + Next.js + TypeScript
-- Zero Python in production
-- Deployed on Vercel free tier
-
-**Suggested Visuals:** Centered logo, subtitle, weather collage background
+- Three prediction modes: Manual, IoT, Intelligence
+- Core technology: XGBoost + FastAPI + Next.js
+- Two-tier deployment: Vercel (frontend) + Render (backend)
+- Loading screen handles cold start UX
 
 ---
 
@@ -51,22 +50,30 @@
 
 ---
 
-## SLIDE 4: Proposed System
+## SLIDE 4: Proposed System — Overview
 
 **Title:** Proposed System — Overview
 
 **Speaker Notes:**
-"Our proposed system is a full-stack web application. The user selects a district on an interactive SVG map, then adjusts five parameters through an orbital UI — five nodes circling a central pulsing orb, each clickable to reveal an expanded card with a range slider. The system applies 15 engineered features, runs them through 100 XGBoost trees per class (600 total), applies 7 meteorological rule overrides, and returns the predicted condition with a confidence score. The entire inference engine runs in TypeScript inside a Next.js API route — no separate backend."
+"Our proposed system is a full-stack web application supporting three prediction modes. The user selects a district on an interactive SVG map, then chooses a mode from the Portal page — three CometCard tiles with 3D mouse-tracking tilt animation and cursor-following glow effects.
+
+**Manual Mode:** Users adjust five parameters through an orbital UI — five nodes circling a central pulsing orb, each clickable to reveal an expanded card with a range slider. On submit, the frontend sends a POST request to a Python FastAPI backend on Render.
+
+**IoT Mode:** Live sensor data from a Wokwi ESP32 simulator — DHT22 for temperature and humidity, BMP180 for pressure, and a potentiometer for wind speed. Data is sent to the backend every 10 seconds via HTTP POST with API key authentication.
+
+**Intelligence Mode:** AI-powered analysis that queries Open-Meteo forecast APIs, OpenStreetMap for local infrastructure, Wikimedia Commons for landmarks, and an LLM (Gemini or Groq) for natural language summaries.
+
+The backend applies 15 engineered features, runs them through 100 XGBoost trees per class, applies 7 meteorological rule overrides, and returns the predicted condition with a confidence score."
 
 **Key Talking Points:**
+- Three modes: Manual, IoT, Intelligence
 - SVG district map with hover tooltips
 - Orbital UI: 5 parameter nodes orbiting a central pulse
-- 15 engineered features from 5 raw inputs
-- 100 trees per class, 600 total
-- 7 rule overrides correct ML blind spots
-- Pure TypeScript inference — no Python in production
-
-**Diagrams to Include:** Input → Feature Engineering → XGBoost Trees → Rule Overrides → Output flow
+- Wokwi ESP32 with DHT22 + BMP180 + Potentiometer
+- Intelligence: Open-Meteo + Overpass + Wikimedia + LLM
+- 15 engineered features → 600 trees → rule overrides
+- Python FastAPI on Render — cold start handled by loading screen
+- CometCard 3D tilt with mouse-tracking animation
 
 ---
 
@@ -75,11 +82,15 @@
 **Title:** Project Objectives
 
 - Build an ML model achieving 85%+ accuracy from five atmospheric parameters
-- Engineer 10 domain-specific meteorological features
-- Implement inference in pure TypeScript — no Python runtime
+- Engineer 15 domain-specific meteorological features
+- Deploy a Python FastAPI ML backend on Render free tier
 - Design a cinematic UI with orbital parameter input and Canvas 2D weather backgrounds
-- Deploy on zero-cost infrastructure (Vercel + Supabase free)
+- Implement a 3D loading screen to handle cold-start latency
+- Deploy on zero-cost infrastructure (Vercel + Render + Supabase free)
 - Serve all 30 Karnataka districts with unique travel content
+- Support three prediction modes: Manual, IoT sensor data, and AI Intelligence
+- Integrate Wokwi ESP32 simulator with real sensor hardware
+- Provide API key authentication for IoT endpoints
 
 ---
 
@@ -163,18 +174,21 @@
 
 ---
 
-## SLIDE 11: TypeScript Inference Engine
+## SLIDE 11: Python Backend on Render
 
-**Title:** Porting XGBoost to TypeScript
+**Title:** Python FastAPI ML Backend
 
 **Speaker Notes:**
-"The model is exported from Python using `get_dump(dump_format='json')` — a 6.8 MB JSON file containing 100 tree structures. Our TypeScript engine at `src/lib/xgboost.ts` loads this JSON, walks each tree recursively via `predictTree()`, aggregates class scores, applies `softmax()` normalization, and runs rule overrides. All in under 50 milliseconds."
+"Rather than porting XGBoost to TypeScript, we deploy a Python FastAPI backend on Render's free tier. The backend at `backend/main.py` loads the trained XGBoost model, engineers 15 features from 5 raw inputs, runs 600 trees, applies softmax normalization, and executes rule overrides — all in under 50ms on Render's 512 MB RAM. The free tier spins down after 15 minutes of idle; cold start takes 30-60 seconds. A background thread trains the model on startup so the server responds immediately while the model trains in parallel. A loading screen on the frontend masks this latency with a 3D animated cube sequence."
 
 **Key Points:**
-- 6.8MB JSON model file
-- Recursive tree walker (max depth 8)
+- FastAPI + XGBoost Python on Render free tier (512 MB RAM, 0.1 CPU)
+- Background thread training prevents cold-start port scan timeout
 - 15 features → 600 trees → softmax → overrides
-- <50ms inference in Next.js API route
+- <50ms inference after warm-up
+- Frontend loading screen masks cold start
+- CORS + rate limiting via slowapi
+- Security headers (X-Content-Type-Options, X-Frame-Options, etc.)
 
 ---
 
@@ -186,13 +200,17 @@
 |-------|-----------|
 | Frontend | Next.js 15, React 19, TypeScript 5 |
 | UI | Framer Motion 12, Lenis 1.3, Lucide Icons |
-| ML | XGBoost → TypeScript port |
+| Backend | Python 3.11, FastAPI, XGBoost 2.0 |
+| ML | XGBoost with SMOTE oversampling |
 | Auth | Supabase (email + Google OAuth) |
+| IoT | Wokwi ESP32 (DHT22 + BMP180 + Potentiometer + OLED) |
+| Intelligence | Open-Meteo + Overpass + Wikimedia + Gemini/Groq LLM |
 | Styling | Tailwind CSS v4 + inline styles |
-| Animation | Canvas 2D (6 weather backgrounds) |
-| Deployment | Vercel (Hobby), GitHub |
+| Animation | Canvas 2D (6 backgrounds), CSS 3D (loading screen), CometCard 3D tilt |
+| Deployment | Vercel (frontend), Render (backend), GitHub |
+| Security | CORS, rate limiting (slowapi), API key auth, security headers |
 
-**Fonts:** Playfair Display (headings), Space Mono (labels), Montserrat (body)
+**Fonts:** Playfair Display (headings), Space Mono (labels), Montserrat (body), Courier New (loading cubes)
 
 ---
 
@@ -202,8 +220,11 @@
 
 1. **Login** (`/`) — 6-split weather backgrounds, glassmorphic card with email/password or Google OAuth
 2. **Map** (`/map`) — SVG map with 30 district polygons, hover tooltips, click to select
-3. **Predict** (`/predict?city=X`) — Orbital UI with 5 variable nodes, click-to-expand cards with sliders, 6 preset buttons
-4. **Result** (`/result?city=X&condition=Y&...`) — Full-screen Canvas 2D weather background, parallax zoom hero, condition stickman, content cards, travel destinations, tips, profile modal
+3. **Portal** (`/portal`) — Three CometCard tiles (Manual, IoT, Intelligence) with 3D tilt animation
+4. **Manual** (`/predict?city=X`) — Orbital UI with 5 variable nodes → Loading screen → Result
+5. **IoT** (`/iot?city=X`) — Live sensor dashboard with pause/resume/reset controls
+6. **Intelligence** (`/intelligence`) — District/Place analysis with 7-day forecast, landmarks, LLM summary
+7. **Result** (`/result?...`) — Full-screen Canvas 2D weather background, parallax zoom, content cards, travel, tips
 
 ---
 
@@ -222,18 +243,20 @@
 
 ---
 
-## SLIDE 15: Canvas 2D Weather Backgrounds
+## SLIDE 15: Loading Screen
 
-**Title:** Real-time Weather Visualization
+**Title:** 3D Loading Screen — Cold Start UX
 
 **Speaker Notes:**
-"Six Canvas 2D backgrounds — one per condition — each rendering at 60 FPS via `requestAnimationFrame`. Sunny: radial gradient with 60 floating particles. Cloudy: 3-layer drifting ellipses. Rainy: 200 raindrops with ground ripples. Stormy: 200 vortex particles with lightning flashes using `ctx.save()`/`ctx.restore()`. Foggy: 12 fog patches with radial gradients. Windy: 120 wind streaks with tumbling leaves."
+"Render's free tier spins down after 15 minutes of inactivity. The first prediction after idle triggers a cold start that can take 30-60 seconds. To keep users engaged, we built a 3D animated loading screen with a spinning cube in cyan, purple, and indigo, and seven letter cubes spelling L-O-A-D-I-N-G that glow and fade in a Z-axis wave. The entire animation is CSS 3D transforms and keyframes — no JavaScript animation libraries — keeping the bundle light. `animation-fill-mode: backwards` prevents initial flash on mount."
 
-**Key techniques:**
-- `CanvasRenderingContext2D` for all rendering
-- `ctx.createRadialGradient()` for atmospheric glow
-- `Date.now()`-based alpha pulsation
-- Components loaded via `next/dynamic` with `{ ssr: false }`
+**Technical details:**
+- `transform-style: preserve-3d` with perspective
+- `keyframes zapFade` controls Z-axis translation + opacity
+- `keyframes glowFade` syncs cyan box-shadow glow with the fade
+- `animation-fill-mode: backwards` prevents initial render flash
+- Single `<style>` tag keeps CSS colocated
+- 7 letter cubes with staggered `animation-delay` for wave effect
 
 ---
 
@@ -258,66 +281,134 @@
 
 ---
 
-## SLIDE 18: Deployment & Build
+## SLIDE 18: IoT Integration
 
-**Title:** Deployment
+**Title:** IoT Sensor Integration — Wokwi ESP32
 
-- **Host:** Vercel Hobby (free tier)
-- **CD:** Git push → auto-deploy
-- **Build:** `npm run build` → 6.8MB model bundled with serverless function
-- **Env vars:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- **Status:** Live at `https://karnataka-weather.vercel.app`
+**Speaker Notes:**
+"Our IoT mode connects to a Wokwi ESP32 simulator — a free online tool that simulates ESP32 hardware with real sensor components. The simulator uses four components: a DHT22 sensor on GPIO4 for temperature and humidity, a BMP180 barometric sensor on I2C for pressure, a potentiometer on GPIO34 mapped to 0-50 km/h wind speed, and an OLED SSD1306 display showing live readings. Every 10 seconds, the ESP32 sends an HTTP POST request to our backend's `/iot/sensor-data` endpoint with API key authentication. The backend processes the sensor data, applies the XGBoost model, and returns a prediction. The IoT page on the frontend displays live readings with pause/resume/reset controls."
+
+**Key Points:**
+- Wokwi ESP32 simulator (online, no hardware required)
+- DHT22 (GPIO4) + BMP180 (I2C) + Potentiometer (GPIO34) + OLED (I2C)
+- WiFi built into ESP32 (Wokwi-GUEST network, simulated)
+- HTTP POST every 10 seconds with X-Api-Key header
+- Backend API key authentication via `_verify_api_key()`
+- Live dashboard with sensor controls
+- ±3°C temperature bounds from estimate
 
 ---
 
-## SLIDE 19: Performance
+## SLIDE 19: Intelligence Mode
+
+**Title:** AI-Powered Intelligence Analysis
+
+**Speaker Notes:**
+"The Intelligence mode goes beyond simple prediction. It queries multiple data sources to provide comprehensive weather analysis for any district or place in Karnataka. Open-Meteo provides 7-day forecast data. OpenStreetMap's Overpass API finds local infrastructure — hospitals, markets, transport. Wikimedia Commons retrieves landmark images. An LLM (Google Gemini with Groq fallback) generates a natural language summary of the weather conditions, local impacts, and travel recommendations. All responses are merged into a single intelligence object with forecast data, landmarks, places, and narrative text."
+
+**Key Points:**
+- Open-Meteo: 7-day forecast (temperature, humidity, wind, precipitation)
+- Overpass API: local infrastructure (hospitals, markets, transport)
+- Wikimedia Commons: landmark images
+- Gemini/Groq LLM: natural language weather summary
+- Provider fallback: Gemini first, Groq if Gemini fails
+- asyncio.gather(return_exceptions=True) for timeout isolation
+- Rate limited: 10 requests/minute
+
+---
+
+## SLIDE 20: CometCard 3D Tilt
+
+**Title:** CometCard 3D Tilt Animation
+
+**Speaker Notes:**
+"The Portal page features three CometCard tiles — one for each prediction mode. Each card uses mouse-tracking 3D tilt animation powered by Framer Motion. When the user moves their mouse over a card, `useMotionValue` captures the cursor position relative to the card's center, and `useSpring` applies smooth spring-based rotation on both X and Y axes. A glare overlay with `mix-blend-overlay` creates a realistic light reflection effect. The cards also feature PortalGlow — a cursor-following color glow that responds to the card's accent color. All existing effects are preserved: text reveal on hover, icon lift, float CSS animation, and amber overlay."
+
+**Key Points:**
+- `useMotionValue` for mouse position tracking
+- `useSpring` for smooth spring-based rotation
+- rotateX/rotateY based on cursor offset from card center
+- Glare overlay with `mix-blend-overlay`
+- PortalGlow: cursor-following color glow
+- Text reveal, icon lift, float CSS on hover
+- Three cards: Manual (orange), IoT (green), Intelligence (blue)
+
+---
+
+## SLIDE 21: Deployment
+
+**Title:** Deployment — Two-Tier Architecture
+
+- **Frontend:** Vercel Hobby (free tier) — `karnataka-weather.vercel.app`
+- **Backend:** Render Web Service (free tier) — `karnataka-weather-uxdg.onrender.com`
+- **CD:** Git push → Vercel auto-deploys frontend; Render auto-deploys from GitHub
+- **Env vars:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_IOT_API_KEY`
+- **Cold start:** Render spins down after 15 min idle; 30-60s cold start; loading screen masks delay
+- **API fallback:** Frontend has client-side rule overrides if backend returns error/503
+- **IoT:** Wokwi ESP32 connects to Render backend via public URL
+- **Security:** CORS_ORIGINS, IOT_API_KEY, rate limiting, security headers
+
+---
+
+## SLIDE 22: Performance
 
 **Title:** Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Inference time | <50ms |
+| Inference time (Render) | <50ms (after warm) |
 | Canvas FPS | 60 FPS (all 6 conditions) |
-| Model size | 6.8MB |
+| Cold start | 30-60s (masked by loading screen) |
 | First-load JS | 103KB shared |
 | Build time | ~2 min |
+| IoT data interval | 10 seconds |
+| Intelligence sources | 4 (Open-Meteo, Overpass, Wikimedia, LLM) |
 
 ---
 
-## SLIDE 20: Key Challenges & Fixes
+## SLIDE 23: Key Challenges & Fixes
 
 **Title:** Challenges Overcome
 
 | Problem | Fix |
 |---------|-----|
-| Feature index parsed as single digit | `parseInt(slice(1))` → `parseInt(slice(1))` |
-| 114MB model too large | Reduced to 100 trees + compact JSON = 6.8MB |
-| ML default prediction 93% Foggy for clear warm conditions | 7 rule overrides added |
+| Render free tier port scan timeout | Background thread training; model assigned only after `clf.fit()` |
+| Model `NotFittedError` race condition | Model variable set only after `clf.fit()` completes |
+| 114MB model too large | Reduced to 100 trees + compact JSON |
+| ML default prediction 93% Foggy | 7 rule overrides added |
 | Lenis rAF memory leak | Added `running` flag to stop loop on unmount |
 | StormyBackground canvas corruption | Wrapped lightning in `ctx.save()/restore()` |
-| Login page broken after CSS cleanup | Restored all login-related CSS classes |
+| Loading screen blue box glitch | Changed `background` shorthand to `background-color` longhand |
+| IoT 401 Unauthorized | Added X-Api-Key header to frontend fetch calls |
+| Missing CORS for IoT | Added CORS_ORIGINS env var + slowapi rate limiting |
+| 13 inconsistent district names | Standardized to official Karnataka names (Belagavi, Mysuru, etc.) |
+| Dead client-side XGBoost (6.8MB) | Deleted xgboost.ts + xgboost_model.json |
+| 13 dead files bloating bundle | Removed legacy Three.js, unused components, debug scripts |
+| Missing security headers | Added X-Content-Type-Options, X-Frame-Options, etc. in next.config.mjs |
 
 ---
 
-## SLIDE 21: Future Work
+## SLIDE 24: Future Work
 
 **Title:** Future Enhancements
 
-- ONNX Runtime Web for 500-tree model (96% accuracy)
+- ONNX Runtime Web for on-device inference (skip backend entirely)
 - Prediction history with Supabase database
 - Kannada language localization
-- Real-time sensor integration via weather stations
+- ~~Real-time sensor integration via weather stations~~ — **DONE** (Wokwi ESP32)
 - Time-series forecasting (multi-day predictions)
 - Mobile native app (React Native)
+- Physical ESP32 hardware deployment (replace Wokwi simulator)
+- Multiple IoT sensor nodes per district
 
 ---
 
-## SLIDE 22: Conclusion
+## SLIDE 25: Conclusion
 
 **Title:** Conclusion
 
-"Karnataka Weather demonstrates that ML-powered weather prediction can be deployed without expensive infrastructure. By porting XGBoost to TypeScript, we eliminated the Python backend entirely — the entire application runs on a single Vercel serverless function. The orbital UI provides an intuitive, interactive way to explore atmospheric parameters, and the Canvas 2D backgrounds create an immersive experience. The code is open-source and available at `github.com/Charan-516/karnataka-weather`."
+"Karnataka Weather demonstrates that ML-powered weather prediction can be deployed without expensive infrastructure. A Python FastAPI backend on Render's free tier handles XGBoost inference, while a cinematic Next.js frontend on Vercel provides an immersive user experience. The system supports three prediction modes — Manual, IoT, and Intelligence — making it accessible to users with varying technical capabilities. The Wokwi ESP32 integration proves that real sensor hardware can feed live data into the ML pipeline. The 3D loading screen elegantly handles the cold-start latency of free hosting. The CometCard 3D tilt animation provides an engaging mode selection experience. The code is open-source at `github.com/Charan-516/karnataka-weather`."
 
 ---
 
-*Presentation last updated: 2026-05-31*
+*Presentation last updated: 2026-07-22*

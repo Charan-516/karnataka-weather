@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AuthManager } from '@/lib/auth'
+import { savePrediction } from '@/lib/history'
 import OrbitalPredict from '@/systems/sliders/OrbitalPredict'
 import LoadingScreen from '@/components/ui/loading-screen'
 
@@ -44,8 +45,6 @@ function PredictContent() {
             pressure: parseFloat(pressure.toString()),
             windSpeed: parseFloat(windSpeed.toString()),
         }
-        console.log('[Predict] Sending to backend:', payload)
-
         try {
             const res = await fetch(`${API_URL}/predict`, {
                 method: 'POST',
@@ -60,7 +59,14 @@ function PredictContent() {
             }
             
             const data = await res.json()
-            console.log('[Predict] Backend response:', data)
+
+            savePrediction({
+                district: city,
+                mode: 'manual',
+                condition: data.condition,
+                confidence: data.confidence,
+                input_params: { humidity, pressure, windSpeed, minTemp, maxTemp },
+            })
 
             const params = new URLSearchParams({
                 city,
@@ -169,7 +175,7 @@ function PredictContent() {
                     backdropFilter: 'blur(40px)',
                     border: '1px solid rgba(232, 173, 140, 0.3)',
                     borderRadius: '28px',
-                    padding: '32px 40px',
+                    padding: '36px 44px',
                     width: 'min(700px, 94vw)',
                     boxShadow: '0 24px 80px rgba(180,80,20,0.15)',
                 }}
@@ -179,15 +185,15 @@ function PredictContent() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    style={{ marginBottom: '16px' }}
+                    style={{ marginBottom: '24px' }}
                 >
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
-                        fontSize: '10px',
+                        fontSize: '15px',
                         letterSpacing: '0.25em',
                         textTransform: 'uppercase',
                         color: '#2a1a0a',
-                        marginBottom: '6px',
+                        marginBottom: '8px',
                         textAlign: 'center',
                     }}>
                         Atmospheric Conditions
@@ -239,20 +245,20 @@ function PredictContent() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.7, duration: 0.8 }}
-                    style={{ marginTop: '16px', textAlign: 'center' }}
+                    style={{ marginTop: '28px', textAlign: 'center' }}
                 >
                     <div style={{
                         fontFamily: 'Space Mono, monospace',
-                        fontSize: '8px',
+                        fontSize: '14px',
                         letterSpacing: '0.15em',
                         textTransform: 'uppercase',
                         color: '#2a1a0a',
-                        marginBottom: '8px',
+                        marginBottom: '12px',
                         opacity: 0.5,
                     }}>
                         Quick Preview
                     </div>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
                         {[
                             { label: '☀️ Sunny', cond: 'Sunny', conf: 0.85, h: 35, p: 1018, w: 10, minT: 20, maxT: 32 },
                             { label: '☁️ Cloudy', cond: 'Cloudy', conf: 0.78, h: 75, p: 1008, w: 22, minT: 18, maxT: 28 },
@@ -283,9 +289,9 @@ function PredictContent() {
                                 }}
                                 style={{
                                     fontFamily: 'Space Mono, monospace',
-                                    fontSize: '9px',
+                                    fontSize: '14px',
                                     letterSpacing: '0.08em',
-                                    padding: '5px 12px',
+                                    padding: '8px 16px',
                                     borderRadius: '20px',
                                     border: '1px solid rgba(139,69,19,0.2)',
                                     background: 'rgba(250,242,232,0.7)',
